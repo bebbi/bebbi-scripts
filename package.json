@@ -1,0 +1,18 @@
+{
+  "private": true,
+  "name": "bebbi-scripts",
+  "version": "0.1.0",
+  "description": "Helps build the code",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {},
+  "dependencies": {},
+  "devDependencies": {},
+  "author": "Stefan Baumann <stefan.baumann@gigmade.com>",
+  "homepage": "www.gigmade.com",
+  "license": "UNLICENSED",
+  "repository": "https://github.com/bebbi/bebbi-scripts"
+}
