@@ -52,10 +52,16 @@ This module is distributed via [npm][npm] which is bundled with [node][node] and
 should be installed as one of your project's `devDependencies`:
 
 ```
-npm install --save-dev bebbi-scripts
+yarn add --save-dev bebbi-scripts
 ```
 
-Note: `bebbi-scripts` does not support yarn pnp at this time.
+Note: `bebbi-scripts` does not support yarn pnp at this time. If you are using
+yarn 3 (berry), you will need to create a `.yarnrc.yml` config file in your
+package root containing:
+
+```
+nodeLinker: node-modules
+```
 
 ## Usage
 
@@ -64,8 +70,14 @@ documenting or testing it super duper well because it's really specific to my
 needs. You'll find all available scripts in `src/scripts`.
 
 This project actually dogfoods itself. If you look in the `package.json`, you'll
-find scripts with `node src {scriptName}`. This serves as an example of some of
+find scripts with `node dist {scriptName}`. This serves as an example of some of
 the things you can do with `bebbi-scripts`.
+
+NOTE: This package does not dogfood the build command because it is a typescript
+project now, and therefore it cannot run the commonjs script before it builds
+itself. So the build script in this `package.json` is specific to building the
+compiled distributed package itself, while the build script compiled to
+`dist/scripts` is available to use in parent projects that use this package.
 
 ### Overriding Config
 
@@ -117,11 +129,12 @@ module.exports = Object.assign(jestConfig, {
 
 ### TypeScript Support
 
-If the `tsconfig.json`-file is present in the project root directory and
-`typescript` is a dependency the `@babel/preset-typescript` will automatically
-get loaded when you use the default babel config that comes with
-`bebbi-scripts`. If you customized your `.babelrc`-file you might need to
-manually add `@babel/preset-typescript` to the `presets`-section.
+We ❤️ TypeScript! To use these scripts with typescipt you must also:
+
+1. Install `typescript` as a `devDependency` of your project with
+   `yarn add -D typescipt`
+2. Initialize typescript to generate a `tsconfig.json` file in your project with
+   `yarn tsc --init`
 
 `bebbi-scripts` will automatically load any `.ts` and `.tsx` files, including
 the default entry point, so you don't have to worry about any rollup
@@ -130,9 +143,6 @@ configuration.
 If you have a `typecheck` script (normally set to `bebbi-scripts typecheck`)
 that will be run as part of the `validate` script (which is run as part of the
 `pre-commit` script as well).
-
-TypeScript definition files will also automatically be generated during the
-`build` script.
 
 ## Inspiration
 

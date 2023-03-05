@@ -1,10 +1,14 @@
-node_modules
-.yarn/cache
-coverage
-dist
-.DS_Store
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 
-# these cause more harm than good
-# when working with contributors
-package-lock.json
-yarn.lock
+# Swap the comments on the following lines if you don't wish to use zero-installs
+# Documentation here: https://yarnpkg.com/features/zero-installs
+#!.yarn/cache
+.pnp.*
+
+node_modules
+dist
