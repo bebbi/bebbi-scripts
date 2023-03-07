@@ -1,39 +1,94 @@
-import path from 'path'
-import spawn from 'cross-spawn'
-import yargsParser from 'yargs-parser'
-import {getConcurrentlyArgs, isBebbiScripts, resolveBin} from '../utils'
+import path from "path";
+import spawn from "cross-spawn";
+import yargsParser from "yargs-parser";
+import {
+  getConcurrentlyArgs,
+  hasPkgProp,
+  isBebbiScripts,
+  OneOrMany,
+  pkg,
+  resolveBin,
+} from "../utils";
 
-console.log('Running `bebbi-scripts build`, Please wait...')
+console.log("Running `bebbi-scripts build`, Please wait...");
 
-if (isBebbiScripts()) {
-  console.log(
-    'The build script is not meant to be run within the context of the `bebbi-scripts` package itself. This build script should only be run from a parent project.',
-  )
-  process.exit(1)
-}
+const args = process.argv.slice(2);
+const parsedArgs = yargsParser(args);
 
-const args = process.argv.slice(2)
-const parsedArgs = yargsParser(args)
+const here = (p: string) => path.join(__dirname, p);
+const hereRelative = (p: string) => here(p).replace(process.cwd(), ".");
 
-const here = (p: string) => path.join(__dirname, p)
-const hereRelative = (p: string) => here(p).replace(process.cwd(), '.')
+const useBuiltinConfig = !args.includes("--project");
 
-export const compileToOptions = {
+const buildTypes = ["cjs", "esm", "types"] as const;
+
+const passThroughArgs = [...args].filter(
+  (a) => !(buildTypes as unknown as string[]).includes(a)
+);
+
+const getPackageBuildProps = (): Partial<
+  Record<typeof buildTypes[number], OneOrMany<string[]>>
+> => {
+  const build =
+    typeof pkg?.["build"] === "string" ? [pkg["build"]] : pkg?.["build"] ?? [];
+  if (Array.isArray(build)) {
+    const res = Object.fromEntries(
+      buildTypes.map((b) => {
+        return [b, build.map((arg: unknown) => arg?.toString() ?? "")];
+      })
+    );
+    return res;
+  }
+  const buildConfig: Partial<
+    Record<typeof buildTypes[number], OneOrMany<string[]>>
+  > = {};
+  if (typeof build === "object" && build.hasOwnProperty("cjs")) {
+    if (typeof build.cjs === 'string') 
+      buildConfig['cjs'] = [build.cjs]
+    if (Array.isArray(build.cjs)) 
+      buildConfig['cjs'] = build.cjs.filter((arg: unknown) => typeof arg === 'string')
+  }
+  if (typeof build === "object" && build.hasOwnProperty("esm")) {
+    if (typeof build.esm === 'string') 
+      buildConfig['esm'] = [build.esm]
+    if (Array.isArray(build.esm)) buildConfig['esm'] = 
+      build.esm.filter((arg: unknown) => typeof arg === 'string')
+  }
+  if (typeof build === "object" && build.hasOwnProperty("types")) {
+    if (typeof build.types === 'string') 
+      buildConfig['types'] = [build.types]
+    if (Array.isArray(build.types)) 
+      buildConfig['types'] = build.types.filter((arg: unknown) => typeof arg === 'string')
+  }
+  return buildConfig;
+};
+
+const packageArgs: Partial<
+  Record<typeof buildTypes[number], OneOrMany<string[]>>
+> = hasPkgProp("build") ? getPackageBuildProps() : {};
+
+export const compileToOptions: Record<typeof buildTypes[number], string> = {
   cjs: [
-    resolveBin('typescript', {executable: 'tsc'}),
-    '--project',
-    hereRelative('../config/tsconfig.cjs.json'),
-  ].join(' '),
+    resolveBin("typescript", { executable: "tsc" }),
+    "--project",
+    hereRelative("../config/tsconfig.cjs.json"),
+    ...(packageArgs.cjs ?? []),
+    ...passThroughArgs,
+  ].join(" "),
   esm: [
-    resolveBin('typescript', {executable: 'tsc'}),
-    '--project',
-    hereRelative('../config/tsconfig.esm.json'),
-  ].join(' '),
+    resolveBin("typescript", { executable: "tsc" }),
+    "--project",
+    hereRelative("../config/tsconfig.esm.json"),
+    ...(packageArgs.esm ?? []),
+    ...passThroughArgs,
+  ].join(" "),
   types: [
-    resolveBin('typescript', {executable: 'tsc'}),
-    '--project',
-    hereRelative('../config/tsconfig.types.json'),
-  ].join(' '),
+    resolveBin("typescript", { executable: "tsc" }),
+    "--project",
+    hereRelative("../config/tsconfig.types.json"),
+    ...(packageArgs.types ?? []),
+    ...passThroughArgs,
+  ].join(" "),
   /*eslint no-warning-comments: "off"*/
   /**
    * FIXME:
@@ -48,31 +103,57 @@ export const compileToOptions = {
   //   resolveBin('webpack'),
   //   '--config',
   //   hereRelative('../config/webpack.config.js'),
+  //   ...passThroughArgs,
   // ].join(' '),
   /*eslint no-warning-comments: "error"*/
-}
+};
 
-const compileTo = parsedArgs._.length
-  ? parsedArgs._.map(o => o.toString()).filter(o =>
-      Object.keys(compileToOptions).includes(o),
-    )
-  : Object.keys(compileToOptions)
+let compileTo = parsedArgs._.length
+  ? parsedArgs._.map((o) => o.toString()).filter((o) =>
+    (buildTypes as unknown as string[]).includes(o)
+  )
+  : (buildTypes as unknown as string[]);
 
 if (compileTo.length < 1) {
-  console.log({_: parsedArgs._, compileTo})
-  throw new Error('Unknown build specified')
+  console.warn(
+    `CAUTION: Did not find one of the build types in argument list specified, so by default building all of the build types: ${Object.keys(
+      compileToOptions
+    )}. If this is unexpected, run the \`clean\` script and specify your desired build type.`
+  );
+  compileTo = buildTypes as unknown as string[];
 }
 
 const go = () => {
   const scripts: Record<string, string> = Object.fromEntries(
-    Object.entries(compileToOptions).filter(([opt]) => compileTo.includes(opt)),
-  )
+    Object.entries(compileToOptions).filter(([opt]) => compileTo.includes(opt))
+  );
+  if (isBebbiScripts()) {
+    if (!parsedArgs._.includes("test")) {
+      const result = spawn.sync(resolveBin("yarn"), ["build"], {
+        stdio: "inherit",
+      });
+      return result.status ?? undefined;
+    }
+    console.log(JSON.stringify(scripts));
+    return undefined;
+  }
+  if (useBuiltinConfig) {
+    if (Object.keys(scripts).length > 1 && passThroughArgs.length > 1) {
+      console.warn(
+        `WARNING!: Using more than one build type with passed through args. Each build type will be given the passed through args. If this was not the intention, then call the builds independently specifying the build type.`
+      );
+    }
+    const result = spawn.sync(
+      resolveBin("concurrently"),
+      getConcurrentlyArgs(scripts),
+      { stdio: "inherit" }
+    );
+    return result.status ?? undefined;
+  }
   const result = spawn.sync(
-    resolveBin('concurrently'),
-    getConcurrentlyArgs(scripts),
-    {stdio: 'inherit'},
-  )
-  return result.status ?? undefined
-}
+    [resolveBin("typescript", { executable: "tsc" }), ...args].join(" ")
+  );
+  return result.status ?? undefined;
+};
 
-process.exit(go())
+process.exit(go());

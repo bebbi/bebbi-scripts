@@ -24,14 +24,16 @@ export {resolveBin} from './resolveBin'
 const arrify = <T>(props: OneOrMany<T>): T[] =>
   Array.isArray(props) ? props : [props]
 
-const {packageJson: pkg, path: pkgPath = ''} =
+export const {packageJson: pkg, path: pkgPath = ''} =
   readPkgUp.sync({
     cwd: fs.realpathSync(process.cwd()),
   }) ?? {}
 
 export const appDirectory = path.dirname(pkgPath)
 
-type OneOrMany<T> = T | T[]
+export type OneOrMany<T> = T | T[]
+
+export type NonNullable<T> = T extends null | undefined ? never : T
 
 export const isBebbiScripts = () => pkg?.name === 'bebbi-scripts'
 
@@ -73,11 +75,11 @@ const hasDevDep = hasPkgSubProp('devDependencies')
 export const hasAnyDep = (args: OneOrMany<string>) =>
   [hasDep, hasDevDep, hasPeerDep].some(fn => fn(args))
 
-export const ifAnyDep = (
+export const ifAnyDep = <T = OneOrMany<string>, F = OneOrMany<string>>(
   deps: OneOrMany<string>,
-  t?: OneOrMany<string>,
-  f?: OneOrMany<string>,
-) => (hasAnyDep(arrify(deps)) ? t : f)
+  t?: T,
+  f?: F,
+) => (hasAnyDep(arrify(deps)) ? (t as T) : (f as F))
 
 export const ifScript = ifPkgSubProp('scripts')
 
