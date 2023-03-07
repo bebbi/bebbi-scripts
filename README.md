@@ -4,19 +4,6 @@
 <p>CLI toolbox for common scripts for my projects</p>
 </div>
 
----
-
-<!-- prettier-ignore-start -->
-[![Build Status][build-badge]][build]
-[![Code Coverage][coverage-badge]][coverage]
-[![version][version-badge]][package]
-[![downloads][downloads-badge]][npmtrends]
-[![MIT License][license-badge]][license]
-[![All Contributors][all-contributors-badge]](#contributors-)
-[![PRs Welcome][prs-badge]][prs]
-[![Code of Conduct][coc-badge]][coc]
-<!-- prettier-ignore-end -->
-
 ## The problem
 
 I do a bunch of open source and want to make it easier to maintain so many
@@ -73,11 +60,12 @@ This project actually dogfoods itself. If you look in the `package.json`, you'll
 find scripts with `node dist {scriptName}`. This serves as an example of some of
 the things you can do with `bebbi-scripts`.
 
-NOTE: This package does not dogfood the build command because it is a typescript
-project now, and therefore it cannot run the commonjs script before it builds
-itself. So the build script in this `package.json` is specific to building the
-compiled distributed package itself, while the build script compiled to
-`dist/scripts` is available to use in parent projects that use this package.
+**NOTE**: This package does not dogfood the build command because it is a
+typescript project now, and therefore it cannot run the commonjs script before
+it builds itself. So the build script in this `package.json` is specific to
+building the compiled distributed package itself, while the build script
+compiled to `dist/scripts` is available to use in parent projects that use this
+package.
 
 ### Overriding Config
 
@@ -90,7 +78,8 @@ want to have your own config for something, just add the configuration and
 the parts of the config you need to.
 
 This can be a very helpful way to make editor integration work for tools like
-ESLint which require project-based ESLint configuration to be present to work.
+ESLint which sometimes requires project-based ESLint configuration to be present
+to work.
 
 So, if we were to do this for ESLint, you could create an `.eslintrc` with the
 contents of:
@@ -99,42 +88,21 @@ contents of:
 {"extends": "./node_modules/bebbi-scripts/eslint.js"}
 ```
 
-> Note: for now, you'll have to include an `.eslintignore` in your project until
-> [this eslint issue is resolved](https://github.com/eslint/eslint/issues/9227).
-
-Or, for `babel`, a `.babelrc` with:
-
-```
-{"presets": ["bebbi-scripts/babel"]}
-```
-
-Or, for `jest`:
-
-```javascript
-const {jest: jestConfig} = require('bebbi-scripts/config')
-module.exports = Object.assign(jestConfig, {
-  // your overrides here
-
-  // for test written in Typescript, add:
-  transform: {
-    '\\.(ts|tsx)$': '<rootDir>/node_modules/ts-jest/preprocessor.js',
-  },
-})
-```
-
-> Note: `bebbi-scripts` intentionally does not merge things for you when you
-> start configuring things to make it less magical and more straightforward.
-> Extending can take place on your terms. I think this is actually a great way
-> to do this.
+And then you can add your own config customizations as needed.
 
 ### TypeScript Support
 
-We ❤️ TypeScript! To use these scripts with typescipt you must also:
+We ❤️ TypeScript! This project has been developed with and for Typescript
+projects. To use this package you must at bare minimum:
 
-1. Install `typescript` as a `devDependency` of your project with
-   `yarn add -D typescipt`
-2. Initialize typescript to generate a `tsconfig.json` file in your project with
-   `yarn tsc --init`
+1. Create a `tsconfig.json` file in your project with at least the following
+   contents:
+
+```json
+{
+  "extends": "./node_modules/bebbi-scripts/extend.tsconfig.json"
+}
+```
 
 `bebbi-scripts` will automatically load any `.ts` and `.tsx` files, including
 the default entry point, so you don't have to worry about any rollup
