@@ -28,7 +28,7 @@ const go = () => {
 
   if (result.status !== 0) return result.status ?? undefined
 
-  result = spawn.sync('yarn', ['validate'], {
+  result = spawn.sync('yarn', ['validate', '--no-banner'], {
     stdio: 'inherit',
   })
 
