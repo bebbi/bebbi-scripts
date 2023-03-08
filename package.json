@@ -23,13 +23,12 @@
   },
   "bin": "dist/index.js",
   "scripts": {
-    "clean": "node src/tools/cleanup",
+    "clean": "node src/tools/cleanup --no-banner",
     "build": "yarn clean && tsc && yarn postBuild",
     "postBuild": "node dist/postBuild.js",
-    "lint": "node dist lint",
-    "format": "node dist format",
-    "validate": "node dist validate",
-    "pub": "yarn format && yarn lint --fix && yarn build"
+    "lint": "node dist lint --no-banner",
+    "format": "node dist format --no-banner",
+    "validate": "node dist validate"
   },
   "dependencies": {
     "@types/eslint": "^8.21.1",

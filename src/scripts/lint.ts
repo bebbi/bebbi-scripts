@@ -5,7 +5,7 @@ import {hasPkgProp, resolveBin, hasFile, fromRoot} from '../utils'
 
 console.log('Running `bebbi-scripts lint`, Please wait...')
 
-let args = process.argv.slice(2)
+let args = process.argv.slice(2).filter(f => f !== '--no-banner')
 const here = (p: string) => path.join(__dirname, p)
 const hereRelative = (p: string) => here(p).replace(process.cwd(), '.')
 const parsedArgs = yargsParser(args)

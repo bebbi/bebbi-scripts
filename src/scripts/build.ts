@@ -12,7 +12,7 @@ import {
 
 console.log('Running `bebbi-scripts build`, Please wait...')
 
-const args = process.argv.slice(2)
+const args = process.argv.slice(2).filter(f => f !== '--no-banner')
 const parsedArgs = yargsParser(args)
 
 const here = (p: string) => path.join(__dirname, p)

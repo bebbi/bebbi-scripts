@@ -11,13 +11,13 @@ const useDefaultScripts = typeof validateScripts !== 'string'
 
 const scripts = useDefaultScripts
   ? {
-      build: ifScript('build', 'yarn build', ''),
-      lint: preCommit ? '' : ifScript('lint', 'yarn lint', ''),
+      build: ifScript('build', 'yarn build --no-banner', ''),
+      lint: preCommit ? '' : ifScript('lint', 'yarn lint --no-banner', ''),
     }
   : validateScripts.split(',').reduce<Record<string, string>>(
       (scriptsToRun, name) => ({
         ...scriptsToRun,
-        [name]: `yarn ${name}`,
+        [name]: `yarn ${name} --no-banner`,
       }),
       {},
     )

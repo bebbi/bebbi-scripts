@@ -4,7 +4,7 @@ import {appDirectory, isBebbiScripts} from '../utils'
 
 console.log('Running `bebbi-scripts clean`, Please wait...')
 
-const args = process.argv.slice(2)
+const args = process.argv.slice(2).filter(f => f !== '--no-banner')
 const parsedArgs = yargsParser(args)
 
 const buildOptions = ['cjs', 'esm', 'types', 'umd']

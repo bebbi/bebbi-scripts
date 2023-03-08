@@ -7,7 +7,7 @@ console.log('Running `bebbi-scripts test`, Please wait...')
 
 process.env.NODE_ENV = 'test'
 
-const args = process.argv.slice(2)
+const args = process.argv.slice(2).filter(f => f !== '--no-banner')
 
 const watch =
   !isCI &&
