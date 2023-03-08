@@ -3,6 +3,8 @@ import {run} from 'jest'
 import {hasFile, hasPkgProp, parseEnv} from '../utils'
 import {jestConfig} from '../config/jest.config'
 
+console.log('Running `bebbi-scripts test`, Please wait...')
+
 process.env.NODE_ENV = 'test'
 
 const args = process.argv.slice(2)
