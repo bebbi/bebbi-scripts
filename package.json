@@ -29,7 +29,7 @@
     "lint": "node dist lint",
     "format": "node dist format",
     "validate": "node dist validate",
-    "r": "node dist"
+    "pub": "yarn format && yarn lint --fix && yarn build"
   },
   "dependencies": {
     "@types/eslint": "^8.21.1",
