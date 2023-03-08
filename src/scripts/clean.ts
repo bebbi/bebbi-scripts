@@ -16,7 +16,7 @@ const cleanDirs = parsedArgs._.length
 if (!isBebbiScripts() && cleanDirs.length > 0) {
   cleanDirs.forEach(dir => {
     console.log(`Deleting: ${appDirectory}/dist/${dir}`)
-    rimraf.rimrafSync(`${appDirectory}/dist/dir`)
+    rimraf.rimrafSync(`${appDirectory}/dist/${dir}`)
   })
 } else {
   if (parsedArgs._.length) {
