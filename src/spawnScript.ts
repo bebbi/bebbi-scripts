@@ -5,6 +5,9 @@ import {signOff} from './bebbiArt'
 
 export const spawnScript = (executor: string, script: string) => {
   const args = process.argv.slice(2)
+
+  const noBanner = args.some(f => f === '--no-banner')
+
   const scriptIndex = args.findIndex(x => scripts.includes(x))
   const buildCommand = scriptIndex === -1 ? args[0] : args[scriptIndex]
   const nodeArgs = scriptIndex > 0 ? args.slice(0, scriptIndex) : []
@@ -30,7 +33,7 @@ export const spawnScript = (executor: string, script: string) => {
   if (result.signal) {
     handleSignal(script, result)
   } else {
-    signOff()
+    if (!noBanner) signOff()
     process.exit(result.status ?? undefined)
   }
 }

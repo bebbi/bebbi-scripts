@@ -4,7 +4,7 @@ import {hasAnyDep, resolveBin, hasFile} from '../utils'
 
 console.log('Running `bebbi-scripts typecheck`, Please wait...')
 
-let args = process.argv.slice(2)
+let args = process.argv.slice(2).filter(f => f !== '--no-banner')
 const parsedArgs = yargsParser(args)
 
 if (!hasAnyDep('typescript')) {

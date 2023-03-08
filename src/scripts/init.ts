@@ -48,8 +48,53 @@ const initYarnConfig = async () => {
   })
 }
 
+const initHusky = async (): Promise<boolean> => {
+  return new Promise(async (res, rej) => {
+    const installScripts: SpawnSyncReturns<Buffer>[] = []
+
+    installScripts.push(
+      spawn.sync(resolveBin('yarn'), ['add', '-D', 'husky'], {
+        stdio: 'inherit',
+      }),
+    )
+    installScripts.push(
+      spawn.sync(resolveBin('yarn'), ['dlx', 'husky-init', '--yarn3'], {
+        stdio: 'inherit',
+      }),
+    )
+    installScripts.push(
+      spawn.sync(resolveBin('yarn'), [], {
+        stdio: 'inherit',
+      }),
+    )
+    return Promise.all(installScripts)
+      .then(result => {
+        if (result.every(r => r.status === 0)) {
+          fs.writeFile(
+            fromRoot('.husky/pre-commit'),
+            [
+              '#!/usr/bin/env sh',
+              '. "$(dirname -- "$0")/_/husky.sh"',
+              '',
+              'yarn bebbi-scripts pre-commit',
+              '',
+            ].join('\n'),
+            {encoding: 'utf-8'},
+            e => {
+              if (e) return rej(e)
+              res(true)
+            },
+          )
+          return res(true)
+        }
+        return rej(result)
+      })
+      .catch(e => rej(e))
+  })
+}
+
 const initScriptsConfig = async (secondRun?: boolean): Promise<boolean> => {
-  return new Promise<boolean>((res, rej) => {
+  return new Promise<boolean>(async (res, rej) => {
     if (fs.existsSync(pkgPath)) {
       fs.readFile(pkgPath, {encoding: 'utf-8'}, (err, data) => {
         if (err) return rej(err)
@@ -78,6 +123,9 @@ const initScriptsConfig = async (secondRun?: boolean): Promise<boolean> => {
         if (!pkgJSON.scripts.validate) {
           pkgJSON.scripts.validate = 'bebbi-scripts validate'
         }
+        if (!pkgJSON.scripts.prepare) {
+          pkgJSON.scripts.prepare = 'husky install'
+        }
         fs.writeFile(
           pkgPath,
           JSON.stringify(pkgJSON, undefined, 2),
@@ -88,6 +136,20 @@ const initScriptsConfig = async (secondRun?: boolean): Promise<boolean> => {
           },
         )
       })
+      const installScripts: SpawnSyncReturns<Buffer>[] = []
+
+      return Promise.all(installScripts)
+        .then(async result => {
+          if (result.every(r => r.status === 0)) {
+            if (!secondRun) {
+              return initScriptsConfig(true).then(comp => res(comp))
+            }
+            const comp = await initHusky()
+            return res(comp)
+          }
+          return rej(result)
+        })
+        .catch(e => rej(e))
     } else {
       const installScripts: SpawnSyncReturns<Buffer>[] = []
       installScripts.push(
@@ -95,17 +157,18 @@ const initScriptsConfig = async (secondRun?: boolean): Promise<boolean> => {
       )
       // can't install from registry what isn't published yet.
       // installScripts.push(
-      //   spawn.sync(resolveBin('yarn'), ['add -D bebbi-scripts'], {
+      //   spawn.sync(resolveBin('yarn'), ['add', '-D', 'bebbi-scripts'], {
       //     stdio: 'inherit',
       //   }),
       // )
       return Promise.all(installScripts)
-        .then(result => {
+        .then(async result => {
           if (result.every(r => r.status === 0)) {
             if (!secondRun) {
               return initScriptsConfig(true).then(comp => res(comp))
             }
-            return res(true)
+            const comp = await initHusky()
+            return res(comp)
           }
           return rej(result)
         })
