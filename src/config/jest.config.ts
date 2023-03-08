@@ -1,4 +1,3 @@
-// import path from 'path'
 import jest from 'jest'
 import {hasFile, ifAnyDep} from '../utils'
 
@@ -12,6 +11,7 @@ const ignores = [
 ]
 
 export const jestConfig: jest.Config = {
+  preset: 'ts-jest',
   roots: ['<rootDir>/src'],
   testEnvironment: ifAnyDep(
     ['webpack', 'rollup', 'react', 'preact'],
@@ -57,9 +57,3 @@ for (const setupFile of setupFiles) {
     jestConfig.setupFilesAfterEnv = [`<rootDir>/${setupFile}`]
   }
 }
-
-// const here = (p: string) => path.join(__dirname, p)
-
-// if (useBuiltInBabelConfig) {
-//   jestConfig.transform = {'^.+\\.(js|jsx|ts|tsx)$': here('./babel-transform')}
-// }
