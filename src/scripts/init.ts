@@ -93,11 +93,12 @@ const initScriptsConfig = async (secondRun?: boolean): Promise<boolean> => {
       installScripts.push(
         spawn.sync(resolveBin('yarn'), ['init'], {stdio: 'inherit'}),
       )
-      installScripts.push(
-        spawn.sync(resolveBin('yarn'), ['add -D bebbi-scripts'], {
-          stdio: 'inherit',
-        }),
-      )
+      // can't install from registry what isn't published yet.
+      // installScripts.push(
+      //   spawn.sync(resolveBin('yarn'), ['add -D bebbi-scripts'], {
+      //     stdio: 'inherit',
+      //   }),
+      // )
       return Promise.all(installScripts)
         .then(result => {
           if (result.every(r => r.status === 0)) {
