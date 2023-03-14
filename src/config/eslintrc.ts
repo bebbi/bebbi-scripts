@@ -1,4 +1,4 @@
-import {ifAnyDep} from '../utils'
+import { ifAnyDep } from '../utils'
 
 const config = {
   extends: [

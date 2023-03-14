@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import {help} from './help'
-import {spawnScript} from './spawnScript'
+import { help } from './help'
+import { spawnScript } from './spawnScript'
 
 const [executor, , script] = process.argv
 

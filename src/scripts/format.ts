@@ -1,11 +1,11 @@
 import path from 'path'
 import spawn from 'cross-spawn'
 import yargsParser from 'yargs-parser'
-import {hasFile, hasLocalConfig, resolveBin} from '../utils'
+import { hasFile, hasLocalConfig, resolveBin } from '../utils'
 
 console.log('Running `bebbi-scripts format`, Please wait...')
 
-const args = process.argv.slice(2).filter(f => f !== '--no-banner')
+const args = process.argv.slice(2).filter((f) => f !== '--no-banner')
 const parsedArgs = yargsParser(args)
 
 const here = (p: string) => path.join(__dirname, p)
@@ -25,7 +25,7 @@ const ignore = useBuiltInIgnore
 
 const write = args.includes('--no-write') ? [] : ['--write']
 
-const relativeArgs = args.map(a => a.replace(`${process.cwd()}/`, ''))
+const relativeArgs = args.map((a) => a.replace(`${process.cwd()}/`, ''))
 
 const filesToApply = parsedArgs._.length
   ? []
@@ -34,7 +34,7 @@ const filesToApply = parsedArgs._.length
 const result = spawn.sync(
   resolveBin('prettier'),
   [...config, ...ignore, ...write, ...filesToApply].concat(relativeArgs),
-  {stdio: 'inherit'},
+  { stdio: 'inherit' }
 )
 
 process.exit(result.status ?? undefined)

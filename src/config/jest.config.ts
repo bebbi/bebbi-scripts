@@ -1,5 +1,5 @@
 import jest from 'jest'
-import {hasFile, ifAnyDep} from '../utils'
+import { hasFile, ifAnyDep } from '../utils'
 
 const ignores = [
   '/node_modules/',
@@ -16,7 +16,7 @@ export const jestConfig: jest.Config = {
   testEnvironment: ifAnyDep(
     ['webpack', 'rollup', 'react', 'preact'],
     'jsdom',
-    'node',
+    'node'
   ),
   testEnvironmentOptions: {
     url: 'http://localhost',

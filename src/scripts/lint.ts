@@ -1,11 +1,11 @@
 import path from 'path'
 import spawn from 'cross-spawn'
 import yargsParser from 'yargs-parser'
-import {hasPkgProp, resolveBin, hasFile, fromRoot} from '../utils'
+import { hasPkgProp, resolveBin, hasFile, fromRoot } from '../utils'
 
 console.log('Running `bebbi-scripts lint`, Please wait...')
 
-let args = process.argv.slice(2).filter(f => f !== '--no-banner')
+let args = process.argv.slice(2).filter((f) => f !== '--no-banner')
 const here = (p: string) => path.join(__dirname, p)
 const hereRelative = (p: string) => here(p).replace(process.cwd(), '.')
 const parsedArgs = yargsParser(args)
@@ -52,14 +52,14 @@ if (filesGiven) {
   // and filter out the ones that aren't js files. Otherwise json or css files
   // may be passed through
   args = args.filter(
-    a => !parsedArgs._.includes(a) || extensions.some(e => a.endsWith(e)),
+    (a) => !parsedArgs._.includes(a) || extensions.some((e) => a.endsWith(e))
   )
 }
 
 const result = spawn.sync(
   resolveBin('eslint'),
   [...config, ...ext, ...ignore, ...cache, ...args, ...filesToApply],
-  {stdio: 'inherit'},
+  { stdio: 'inherit' }
 )
 
 process.exit(result.status ?? undefined)
