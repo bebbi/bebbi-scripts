@@ -1,13 +1,13 @@
 import path from 'path'
 import spawn from 'cross-spawn'
-import {hasPkgProp, hasFile, resolveBin} from '../utils'
+import { hasPkgProp, hasFile, resolveBin } from '../utils'
 
 console.log('Running `bebbi-scripts pre-commit`, Please wait...')
 
 const here = (p: string) => path.join(__dirname, p)
 const hereRelative = (p: string) => here(p).replace(process.cwd(), '.')
 
-const args = process.argv.slice(2).filter(f => f !== '--no-banner')
+const args = process.argv.slice(2).filter((f) => f !== '--no-banner')
 
 const useBuiltInConfig =
   !args.includes('--config') &&

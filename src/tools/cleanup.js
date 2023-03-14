@@ -5,7 +5,7 @@ const Path = require('path')
 
 const deleteFolderRecursive = (/** @type {string} */ path) => {
   if (fs.existsSync(path)) {
-    fs.readdirSync(path).forEach(file => {
+    fs.readdirSync(path).forEach((file) => {
       const curPath = Path.join(path, file)
       if (fs.lstatSync(curPath).isDirectory()) {
         deleteFolderRecursive(curPath)

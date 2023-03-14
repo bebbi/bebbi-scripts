@@ -1,4 +1,4 @@
-import {resolveBebbiScripts} from '../utils'
+import { resolveBebbiScripts } from '../utils'
 
 const bebbiScripts = resolveBebbiScripts()
 

@@ -1,5 +1,5 @@
-import {bebbiArt} from './bebbiArt'
-import {scripts} from './utils'
+import { bebbiArt } from './bebbiArt'
+import { scripts } from './utils'
 
 const [, ignoredBin] = process.argv
 

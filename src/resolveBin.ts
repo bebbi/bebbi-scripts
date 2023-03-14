@@ -4,7 +4,7 @@ import which from 'which'
 
 export const resolveBin = (
   modName: string,
-  {executable = modName, cwd = process.cwd()} = {},
+  { executable = modName, cwd = process.cwd() } = {}
 ) => {
   let pathFromWhich: string = ''
   try {
@@ -17,7 +17,9 @@ export const resolveBin = (
     const modPkgPath = require.resolve(`${modName}/package.json`)
     const modPkgDir = path.dirname(modPkgPath)
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const {bin} = require(modPkgPath) as {bin: string | Record<string, string>}
+    const { bin } = require(modPkgPath) as {
+      bin: string | Record<string, string>
+    }
     const binPath = typeof bin === 'string' ? bin : bin[executable]
     const fullPathToBin = path.join(modPkgDir, binPath)
     if (fullPathToBin === pathFromWhich) {

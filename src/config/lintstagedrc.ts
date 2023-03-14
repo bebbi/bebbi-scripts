@@ -1,4 +1,4 @@
-import {resolveBebbiScripts, resolveBin} from '../utils'
+import { resolveBebbiScripts, resolveBin } from '../utils'
 
 const bebbiScripts = resolveBebbiScripts()
 const doctoc = resolveBin('doctoc')

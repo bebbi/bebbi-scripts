@@ -1,11 +1,12 @@
 import spawn from 'cross-spawn'
-import {parseEnv, resolveBin, ifScript, getConcurrentlyArgs} from '../utils'
+import { parseEnv, resolveBin, ifScript, getConcurrentlyArgs } from '../utils'
 
 console.log('Running `bebbi-scripts validate`, Please wait...')
 
 const preCommit = parseEnv('SCRIPTS_PRE_COMMIT', false)
 
-const validateScripts = process.argv[2]
+const validateScripts =
+  process.argv[2] === '--no-banner' ? undefined : process.argv[2]
 
 const useDefaultScripts = typeof validateScripts !== 'string'
 
@@ -17,9 +18,9 @@ const scripts = useDefaultScripts
   : validateScripts.split(',').reduce<Record<string, string>>(
       (scriptsToRun, name) => ({
         ...scriptsToRun,
-        [name]: `yarn ${name} --no-banner`,
+        [name]: `yarn ${name}`,
       }),
-      {},
+      {}
     )
 
 const scriptCount = Object.values(scripts).filter(Boolean).length
@@ -28,7 +29,7 @@ if (scriptCount > 0) {
   const result = spawn.sync(
     resolveBin('concurrently'),
     getConcurrentlyArgs(scripts),
-    {stdio: 'inherit'},
+    { stdio: 'inherit' }
   )
 
   process.exit(result.status ?? undefined)
