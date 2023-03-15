@@ -42,6 +42,7 @@
     "doctoc": "^2.2.1",
     "eslint": "^8.35.0",
     "eslint-config-kentcdodds": "^20.5.0",
+    "eslint-config-react-app": "^7.0.1",
     "glob": "^9.2.1",
     "husky": "^8.0.3",
     "is-ci": "^3.0.1",

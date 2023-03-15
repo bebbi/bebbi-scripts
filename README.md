@@ -14,6 +14,10 @@ projects.
 This is a CLI that abstracts away all configuration for my open source projects
 for linting, testing, building, and more.
 
+This differs from other similar tools like `kcd-scripts` and `create-react-app` in that these scripts are srced in typescript and compiled themselves. This helps keep this script package maintainable and strongly typed with typescript throughout. But more than that is that these scripts does not depend upon babel to compile but rather compiles typescript projects with `tsc` directly. And it continues to use extensions of typescript config files while concurrently building multiple builds of your project to be used for `esm`, `cjs`, and `types` (`umd` builds coming soon). This is the scripting toolset to use if you are building a range of projects from react apps to library packages.
+
+This scripting toolset also favors `yarn` over `npm` and has been developed to work in yarn workspaces too.
+
 ## Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
