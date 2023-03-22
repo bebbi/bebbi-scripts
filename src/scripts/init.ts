@@ -20,7 +20,7 @@ const initYarnConfig = async () => {
         let errMsg: string = ''
         const lines = data.split('\n').map((line) => {
           if (line.startsWith('nodeLinker:')) {
-            if (line !== 'nodeLinker: node-modules') {
+            if (!line.includes('node-modules')) {
               errMsg =
                 'A `.yarnrc.yml` config file was found with an incompatible nodeLiner value. This script only supports `node-modules` at this time.'
             }
