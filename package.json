@@ -7,6 +7,11 @@
   "bugs": {
     "url": "https://github.com/bebbi/bebbi-scripts/issues"
   },
+  "files": [
+    "dist",
+    "extend.tsconfig.json",
+    "index.d.ts"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/bebbi/bebbi-scripts"
