@@ -9,7 +9,7 @@ const parsedArgs = yargsParser(args)
 
 if (!hasAnyDep('typescript')) {
   throw new Error(
-    'Cannoe use the "typecheck" script in a project that does not have typescript listed as a dependency (or devDependency). ' +
+    'Cannot use the "typecheck" script in a project that does not have typescript listed as a dependency (or devDependency). ' +
       'Please install typescript first with either `yarn add -D typescript`'
   )
 }
