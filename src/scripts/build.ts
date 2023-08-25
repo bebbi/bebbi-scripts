@@ -159,7 +159,7 @@ if (compileTo.length < 1) {
 }
 
 const go = () => {
-  const scripts: Record<string, string> = Object.fromEntries(
+  const buildScripts: Record<string, string> = Object.fromEntries(
     Object.entries(compileToOptions).filter(([opt]) => compileTo.includes(opt))
   )
   if (isBebbiScripts()) {
@@ -169,18 +169,18 @@ const go = () => {
       })
       return result.status ?? undefined
     }
-    console.log(JSON.stringify(scripts))
+    console.log(JSON.stringify(buildScripts))
     return undefined
   }
   if (useBuiltinConfig) {
-    if (Object.keys(scripts).length > 1 && passThroughArgs.length > 1) {
+    if (Object.keys(buildScripts).length > 1 && passThroughArgs.length > 1) {
       console.warn(
         `WARNING!: Using more than one build type with passed through args. Each build type will be given the passed through args. If this was not the intention, then call the builds independently specifying the build type.`
       )
     }
     const result = spawn.sync(
       resolveBin('concurrently'),
-      getConcurrentlyArgs(scripts),
+      getConcurrentlyArgs(buildScripts),
       { stdio: 'inherit' }
     )
     return result.status ?? undefined

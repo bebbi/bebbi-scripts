@@ -1,10 +1,10 @@
 import { bebbiArt } from './bebbiArt'
-import { scripts } from './utils'
+import { availableScriptNames } from './utils'
 
 const [, ignoredBin] = process.argv
 
 export const help = () => {
-  const scriptsAvailableMessage = scripts.join('\n  ').trim()
+  const scriptsAvailableMessage = availableScriptNames().join('\n  ').trim()
   const fullMessage = `
 ${bebbiArt}
 Usage: ${ignoredBin} [] [--flags]

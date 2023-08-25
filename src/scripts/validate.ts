@@ -5,17 +5,17 @@ console.log('Running `bebbi-scripts validate`, Please wait...')
 
 const preCommit = parseEnv('SCRIPTS_PRE_COMMIT', false)
 
-const validateScripts =
+const defaultValidateScripts =
   process.argv[2] === '--no-banner' ? undefined : process.argv[2]
 
-const useDefaultScripts = typeof validateScripts !== 'string'
+const useDefaultScripts = typeof defaultValidateScripts !== 'string'
 
-const scripts = useDefaultScripts
+const validateScripts = useDefaultScripts
   ? {
       build: ifScript('build', 'yarn build --no-banner', ''),
       lint: preCommit ? '' : ifScript('lint', 'yarn lint --no-banner', ''),
     }
-  : validateScripts.split(',').reduce<Record<string, string>>(
+  : defaultValidateScripts.split(',').reduce<Record<string, string>>(
       (scriptsToRun, name) => ({
         ...scriptsToRun,
         [name]: `yarn ${name}`,
@@ -23,12 +23,12 @@ const scripts = useDefaultScripts
       {}
     )
 
-const scriptCount = Object.values(scripts).filter(Boolean).length
+const scriptCount = Object.values(validateScripts).filter(Boolean).length
 
 if (scriptCount > 0) {
   const result = spawn.sync(
     resolveBin('concurrently'),
-    getConcurrentlyArgs(scripts),
+    getConcurrentlyArgs(validateScripts),
     { stdio: 'inherit' }
   )
 

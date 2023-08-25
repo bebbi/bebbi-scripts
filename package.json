@@ -12,6 +12,9 @@
     "extend.tsconfig.json",
     "index.d.ts"
   ],
+  "exports": {
+    ".": "./dist/functions.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/bebbi/bebbi-scripts"
@@ -29,7 +32,7 @@
   "bin": "dist/index.js",
   "scripts": {
     "clean": "node src/tools/cleanup --no-banner",
-    "build": "yarn clean && tsc && yarn postBuild",
+    "build": "yarn clean && tsc -p tsconfig.functions.json && tsc && yarn postBuild",
     "postBuild": "node dist/postBuild.js",
     "lint": "node dist lint --no-banner",
     "format": "node dist format --no-banner",

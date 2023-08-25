@@ -112,14 +112,19 @@ export const ifAnyDep = <T = OneOrMany<string>, F = OneOrMany<string>>(
 
 export const ifScript = ifPkgSubProp('scripts')
 
-const scriptsPath = path.join(__dirname, 'scripts/')
+export function getScriptsDir(dirname: string) {
+  return path.join(dirname, 'scripts/')
+}
 
-const scriptsAvailable = globSync(toPOSIX(path.join(__dirname, 'scripts', '*')))
+export function availableScriptNames(dirname: string = __dirname) {
+  const scriptsDir = getScriptsDir(dirname)
+  const scriptsAvailable = globSync(toPOSIX(path.join(scriptsDir, '*')))
 
-export const scripts = scriptsAvailable
-  .map((s) => path.normalize(s))
-  .map((s) => s.replace(scriptsPath, '').replace(/\.[tj]s$/, ''))
-  .filter(Boolean)
+  return scriptsAvailable
+    .map((s) => path.normalize(s))
+    .map((s) => s.replace(scriptsDir, '').replace(/\.[tj]s$/, ''))
+    .filter(Boolean)
+}
 
 const envIsSet = (name: string) => {
   return (
