@@ -37,6 +37,7 @@
     "lint": "node dist lint --no-banner",
     "format": "node dist format --no-banner",
     "validate": "node dist validate",
+    "test": "node dist test",
     "script": "node dist"
   },
   "dependencies": {
