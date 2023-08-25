@@ -1,18 +1,18 @@
 import spawn from 'cross-spawn'
 import yargsParser from 'yargs-parser'
-import { hasAnyDep, resolveBin, hasFile } from '../utils'
+import { /* hasAnyDep, */ resolveBin, hasFile } from '../utils'
 
 console.log('Running `bebbi-scripts typecheck`, Please wait...')
 
 let args = process.argv.slice(2).filter((f) => f !== '--no-banner')
 const parsedArgs = yargsParser(args)
 
-if (!hasAnyDep('typescript')) {
-  throw new Error(
-    'Cannot use the "typecheck" script in a project that does not have typescript listed as a dependency (or devDependency). ' +
-      'Please install typescript first with either `yarn add -D typescript`'
-  )
-}
+// if (!hasAnyDep('typescript')) {
+//   throw new Error(
+//     'Cannot use the "typecheck" script in a project that does not have typescript listed as a dependency (or devDependency). ' +
+//       'Please install typescript first with `yarn add -D typescript`'
+//   )
+// }
 
 if (!parsedArgs.project && !parsedArgs.build && !hasFile('tsconfig.json')) {
   throw new Error(
