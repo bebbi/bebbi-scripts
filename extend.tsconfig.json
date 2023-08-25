@@ -1,6 +1,4 @@
 {
-  "include": ["src/**/*"],
-  "compilerOptions": {
-    "skipLibCheck": true
-  }
+  "extends": "./tsconfig.json",
+  "include": ["src/**/*"]
 }
