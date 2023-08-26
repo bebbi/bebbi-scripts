@@ -1,16 +1,15 @@
 {
   "name": "bebbi-scripts",
-  "version": "1.1.0",
+  "version": "0.1.0",
   "description": "Helps build the code",
   "keywords": [],
   "homepage": "https://www.gigmade.com",
-  "bugs": {
-    "url": "https://github.com/bebbi/bebbi-scripts/issues"
-  },
   "files": [
     "dist",
+    "tsconfig.json",
     "extend.tsconfig.json",
-    "index.d.ts"
+    "index.d.ts",
+    "eslint.js"
   ],
   "exports": {
     ".": "./dist/functions.js"
@@ -19,7 +18,7 @@
     "type": "git",
     "url": "https://github.com/bebbi/bebbi-scripts"
   },
-  "license": "UNLICENSED",
+  "license": "MIT",
   "author": "Stefan Baumann <stefan.baumann@gigmade.com>",
   "packageManager": "yarn@3.3.0",
   "devDependencies": {
