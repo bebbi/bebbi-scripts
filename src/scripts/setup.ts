@@ -2,8 +2,20 @@ import { SpawnSyncReturns } from 'child_process'
 import fs from 'fs'
 import spawn from 'cross-spawn'
 import { fromRoot, isBebbiScripts, pkg, pkgPath, resolveBin } from '../utils'
+import readPkgUp from 'read-pkg-up'
 
 const BEBBI_EXTENDS = 'bebbi-scripts/extend.tsconfig.json'
+
+const SCRIPTS = {
+  clean: 'bebbi-scripts clean',
+  build: 'bebbi-scripts build',
+  watch: 'bebbi-scripts cjs --watch',
+  test: 'bebbi-scripts test',
+  format: 'bebbi-scripts format',
+  lint: 'bebbi-scripts lint',
+  validate: 'bebbi-scripts validate',
+  prepare: 'husky install',
+}
 
 console.log('Running `bebbi-scripts setup`, Please wait...')
 
@@ -107,40 +119,35 @@ const initHusky = async (): Promise<boolean> => {
   })
 }
 
-const initScriptsConfig = async (secondRun?: boolean): Promise<boolean> => {
+async function initScriptsConfig(secondRun?: boolean): Promise<boolean> {
   return new Promise<boolean>(async (res, rej) => {
     if (fs.existsSync(pkgPath)) {
       fs.readFile(pkgPath, { encoding: 'utf-8' }, (err, data) => {
         if (err) return rej(err)
-        let pkgJSON: typeof pkg | undefined
+        let pkgJSON: typeof pkg
+
+        if (!data) {
+          return rej('ERROR: empty `package.json` found')
+        }
 
         try {
-          pkgJSON = JSON.parse(data) as typeof pkg
+          // typeof pkg = Something | undefined
+          pkgJSON = (JSON.parse(data) as typeof pkg)!
         } catch (e: unknown) {
-          rej(e)
+          return rej('ERROR: could not parse package.json')
         }
-        if (pkgJSON === undefined) return rej('Unexpected empty `package.json`')
-        if (!pkgJSON.scripts) pkgJSON.scripts = {}
-        if (!pkgJSON.scripts.clean) {
-          pkgJSON.scripts.clean = 'bebbi-scripts clean'
-        }
-        if (!pkgJSON.scripts.build) {
-          pkgJSON.scripts.build = 'bebbi-scripts build'
-        }
-        if (!pkgJSON.scripts.watch) {
-          pkgJSON.scripts.watch = 'bebbi-scripts cjs --watch'
-        }
-        if (!pkgJSON.scripts.test) pkgJSON.scripts.test = 'bebbi-scripts test'
-        if (!pkgJSON.scripts.format) {
-          pkgJSON.scripts.format = 'bebbi-scripts format'
-        }
-        if (!pkgJSON.scripts.lint) pkgJSON.scripts.lint = 'bebbi-scripts lint'
-        if (!pkgJSON.scripts.validate) {
-          pkgJSON.scripts.validate = 'bebbi-scripts validate'
-        }
-        if (!pkgJSON.scripts.prepare) {
-          pkgJSON.scripts.prepare = 'husky install'
-        }
+
+        pkgJSON.scripts = pkgJSON.scripts ?? {}
+
+        Object.values(SCRIPTS).forEach(([key, value]) => {
+          // TODO: TS assert shouldn't be needed
+          const k = pkgJSON!.scripts![key]
+          if (k) {
+            console.log(`Skipping existing script key ${k}`)
+            return
+          }
+          pkgJSON!.scripts![key] = value
+        })
 
         try {
           fs.writeFileSync(pkgPath, JSON.stringify(pkgJSON, undefined, 2))
@@ -150,6 +157,7 @@ const initScriptsConfig = async (secondRun?: boolean): Promise<boolean> => {
 
         res(true)
       })
+
       const installScripts: SpawnSyncReturns<Buffer>[] = []
 
       return Promise.all(installScripts)
@@ -176,18 +184,25 @@ const initScriptsConfig = async (secondRun?: boolean): Promise<boolean> => {
         }),
       )
 
-      return Promise.all(installScripts)
-        .then(async (result) => {
-          if (result.every((r) => r.status === 0)) {
-            if (!secondRun) {
-              return initScriptsConfig(true).then((comp) => res(comp))
-            }
-            const comp = await initHusky()
-            return res(comp)
-          }
-          return rej(result)
-        })
-        .catch((e) => rej(e))
+      let result
+
+      try {
+        result = await Promise.all(installScripts)
+      } catch (err) {
+        return rej(err)
+      }
+
+      if (result.some((r) => r.status === 0)) {
+        return rej(result)
+      }
+
+      if (!secondRun) {
+        const success = await initScriptsConfig(true)
+        return res(success)
+      }
+
+      const success = await initHusky()
+      return res(success)
     }
   })
 }
