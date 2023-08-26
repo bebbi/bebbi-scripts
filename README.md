@@ -51,6 +51,11 @@ that will be run as part of the `validate` script (which is run as part of the `
 
 Help us by adding pull requests to issues!
 
+## Contributors
+
+[amaster507](https://github.com/amaster507)<br />
+[verneleem](https://github.com/verneleem)
+
 ## License
 
 MIT
