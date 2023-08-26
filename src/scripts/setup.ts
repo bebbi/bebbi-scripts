@@ -2,7 +2,6 @@ import { SpawnSyncReturns } from 'child_process'
 import fs from 'fs'
 import spawn from 'cross-spawn'
 import { fromRoot, isBebbiScripts, pkg, pkgPath, resolveBin } from '../utils'
-import readPkgUp from 'read-pkg-up'
 
 const BEBBI_EXTENDS = 'bebbi-scripts/extend.tsconfig.json'
 
@@ -25,9 +24,6 @@ if (isBebbiScripts()) {
 }
 
 const hasGit = fs.existsSync('.git')
-if (!hasGit) {
-  console.log('.git missing. NOT installing git hooks for husky.')
-}
 
 const initYarnConfig = async () => {
   return new Promise<boolean>((res, rej) => {
@@ -69,169 +65,139 @@ const initYarnConfig = async () => {
   })
 }
 
-const initHusky = async (): Promise<boolean> => {
-  return new Promise(async (res, rej) => {
-    const installScripts: SpawnSyncReturns<Buffer>[] = []
+function initHusky(): boolean {
+  const installScripts: SpawnSyncReturns<Buffer>[] = [
+    spawn.sync(resolveBin('yarn'), ['add', '-D', 'husky'], {
+      stdio: 'inherit',
+    }),
+  ]
 
+  hasGit &&
     installScripts.push(
-      spawn.sync(resolveBin('yarn'), ['add', '-D', 'husky'], {
+      spawn.sync(resolveBin('yarn'), ['dlx', 'husky-init', '--yarn3'], {
         stdio: 'inherit',
       }),
     )
-    hasGit &&
-      installScripts.push(
-        spawn.sync(resolveBin('yarn'), ['dlx', 'husky-init', '--yarn3'], {
-          stdio: 'inherit',
-        }),
+
+  if (installScripts.some((r) => r.status !== 0)) {
+    console.log('ERROR: husky installation failed.')
+    return false
+  }
+
+  if (hasGit) {
+    try {
+      fs.writeFileSync(
+        fromRoot('.husky/pre-commit'),
+        [
+          '#!/usr/bin/env sh',
+          '. "$(dirname -- "$0")/_/husky.sh"',
+          '',
+          'yarn bebbi-scripts pre-commit',
+          '',
+        ].join('\n'),
+        { encoding: 'utf-8' },
       )
-    installScripts.push(
-      spawn.sync(resolveBin('yarn'), [], {
-        stdio: 'inherit',
-      }),
-    )
-    return Promise.all(installScripts)
-      .then((result) => {
-        if (!result.every((r) => r.status === 0)) {
-          return rej('Some install scripts failed.')
-        }
-
-        if (hasGit) {
-          fs.writeFile(
-            fromRoot('.husky/pre-commit'),
-            [
-              '#!/usr/bin/env sh',
-              '. "$(dirname -- "$0")/_/husky.sh"',
-              '',
-              'yarn bebbi-scripts pre-commit',
-              '',
-            ].join('\n'),
-            { encoding: 'utf-8' },
-            (e) => {
-              if (e) return rej(e)
-              res(true)
-            },
-          )
-        }
-
-        return res(true)
-      })
-      .catch((e) => rej(e))
-  })
-}
-
-async function initScriptsConfig(secondRun?: boolean): Promise<boolean> {
-  return new Promise<boolean>(async (res, rej) => {
-    if (fs.existsSync(pkgPath)) {
-      fs.readFile(pkgPath, { encoding: 'utf-8' }, (err, data) => {
-        if (err) return rej(err)
-        let pkgJSON: typeof pkg
-
-        if (!data) {
-          return rej('ERROR: empty `package.json` found')
-        }
-
-        try {
-          // typeof pkg = Something | undefined
-          pkgJSON = (JSON.parse(data) as typeof pkg)!
-        } catch (e: unknown) {
-          return rej('ERROR: could not parse package.json')
-        }
-
-        pkgJSON.scripts = pkgJSON.scripts ?? {}
-
-        Object.values(SCRIPTS).forEach(([key, value]) => {
-          // TODO: TS assert shouldn't be needed
-          const k = pkgJSON!.scripts![key]
-          if (k) {
-            console.log(`Skipping existing script key ${k}`)
-            return
-          }
-          pkgJSON!.scripts![key] = value
-        })
-
-        try {
-          fs.writeFileSync(pkgPath, JSON.stringify(pkgJSON, undefined, 2))
-        } catch (err) {
-          return rej(err)
-        }
-
-        res(true)
-      })
-
-      const installScripts: SpawnSyncReturns<Buffer>[] = []
-
-      return Promise.all(installScripts)
-        .then(async (result) => {
-          if (result.every((r) => r.status === 0)) {
-            if (!secondRun) {
-              return initScriptsConfig(true).then((comp) => res(comp))
-            }
-            const comp = await initHusky()
-            return res(comp)
-          }
-          return rej(result)
-        })
-        .catch((e) => rej(e))
-    } else {
-      const installScripts: SpawnSyncReturns<Buffer>[] = []
-      installScripts.push(
-        spawn.sync(resolveBin('yarn'), ['init'], { stdio: 'inherit' }),
-      )
-
-      installScripts.push(
-        spawn.sync(resolveBin('yarn'), ['add', '-D', 'bebbi-scripts'], {
-          stdio: 'inherit',
-        }),
-      )
-
-      let result
-
-      try {
-        result = await Promise.all(installScripts)
-      } catch (err) {
-        return rej(err)
-      }
-
-      if (result.some((r) => r.status === 0)) {
-        return rej(result)
-      }
-
-      if (!secondRun) {
-        const success = await initScriptsConfig(true)
-        return res(success)
-      }
-
-      const success = await initHusky()
-      return res(success)
+    } catch (err) {
+      console.log('ERROR: writing husky pre-commit failed.')
+      return false
     }
-  })
+  }
+
+  return true
 }
 
-async function initTsConfig(): Promise<boolean> {
+function addPkgJsonScripts() {
+  const data = fs.readFileSync('package.json', { encoding: 'utf-8' })
+
+  let pkgJSON: typeof pkg
+
+  if (!data) {
+    console.log('ERROR: empty `package.json` found')
+    return false
+  }
+
+  try {
+    // typeof pkg = Something | undefined
+    pkgJSON = (JSON.parse(data) as typeof pkg)!
+  } catch (e: unknown) {
+    console.log('ERROR: could not parse package.json')
+    return false
+  }
+
+  pkgJSON.scripts = pkgJSON.scripts ?? {}
+
+  Object.entries(SCRIPTS).forEach(([key, value]) => {
+    // TODO: TS assert shouldn't be needed
+    const val = pkgJSON!.scripts![key]
+    if (val) {
+      console.log(`🚫 Skipping existing script key ${key}`)
+      return
+    }
+    console.log(`✅ Adding script key ${key}`)
+    pkgJSON!.scripts![key] = value
+  })
+
+  try {
+    fs.writeFileSync('package.json', JSON.stringify(pkgJSON, undefined, 2))
+  } catch (err) {
+    console.log('ERROR: Could not add scripts to package.json')
+    return false
+  }
+
+  return true
+}
+
+async function initScriptsConfig(): Promise<boolean> {
+  const installPkgJson: SpawnSyncReturns<Buffer>[] = []
+
+  // If no package.json exists, create it in cwd.
+  if (!fs.existsSync('package.json')) {
+    installPkgJson.push(
+      spawn.sync(resolveBin('yarn'), ['init'], { stdio: 'inherit' }),
+    )
+  }
+
+  installPkgJson.push(
+    spawn.sync(resolveBin('yarn'), ['add', '-D', 'bebbi-scripts'], {
+      stdio: 'inherit',
+    }),
+  )
+
+  if (installPkgJson.some((r) => r.status !== 0)) {
+    console.log('ERROR: Some package.json installation scripts failed.')
+    return false
+  }
+
+  const success1 = addPkgJsonScripts()
+  const success2 = initHusky()
+
+  return success1 && success2
+}
+
+function initTsConfig(): boolean {
   const tsConfigPath = fromRoot('tsconfig.json')
 
-  return new Promise<boolean>((res, rej) => {
-    let tsConfig: Record<string, unknown> | undefined
+  let tsConfig: Record<string, unknown> | undefined
 
-    if (fs.existsSync(tsConfigPath)) {
-      const data = fs.readFileSync(tsConfigPath, { encoding: 'utf-8' })
+  if (fs.existsSync(tsConfigPath)) {
+    const data = fs.readFileSync(tsConfigPath, { encoding: 'utf-8' })
 
-      try {
-        tsConfig = JSON.parse(data) as Record<string, unknown>
-      } catch (err: unknown) {}
+    if (!data) {
+      console.log('ERROR: Empty tsconfig.json found.')
+      return false
     }
 
-    if (!tsConfig) {
-      tsConfig = { extends: BEBBI_EXTENDS }
-      fs.writeFile(
-        tsConfigPath,
-        `${JSON.stringify(tsConfig, undefined, 2)}\n`,
-        { encoding: 'utf-8' },
-        (e) => {
-          if (e) return rej(e)
-          res(true)
-        },
-      )
+    try {
+      tsConfig = JSON.parse(data) as Record<string, unknown>
+    } catch (err) {
+      console.log('ERROR: Could not read tsconfig.json (invalid json?)')
+      return false
+    }
+  }
+
+  if (tsConfig) {
+    if (tsConfig.extends === BEBBI_EXTENDS) {
+      return true
     } else {
       console.log(
         'We recommend that your tsconfig.json file extends the bebbi-scripts file like this:\n',
@@ -240,9 +206,23 @@ async function initTsConfig(): Promise<boolean> {
         '           [additional configuration]\n',
         '         }`\n',
       )
-      return res(false)
+      return false
     }
-  })
+  } else {
+    tsConfig = { extends: BEBBI_EXTENDS }
+    try {
+      fs.writeFileSync(
+        tsConfigPath,
+        `${JSON.stringify(tsConfig, undefined, 2)}\n`,
+        { encoding: 'utf-8' },
+      )
+    } catch (err) {
+      console.log('ERROR: Writing tsconfig.json failed')
+      return false
+    }
+  }
+
+  return true
 }
 
 async function run() {
@@ -257,9 +237,14 @@ async function run() {
   }
 
   if (!(await initTsConfig())) {
-    console.log('WARN: `tsconfig.json` not changed.')
-    process.exit(1)
+    console.log('🚫 WARN: `tsconfig.json` not changed.')
   }
+
+  console.log(
+    hasGit
+      ? console.log('✅ husky git hooks installed')
+      : console.log('🚫 Missing .git: skipping husky git hooks'),
+  )
 
   process.exit(0)
 }
