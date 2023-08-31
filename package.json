@@ -12,7 +12,7 @@
     "eslint.js"
   ],
   "exports": {
-    ".": "./dist/functions.js"
+    ".": "./dist",
     "./tsconfig.json": "./tsconfig.json",
     "./tsconfig": "./tsconfig.json"
   },
@@ -30,16 +30,16 @@
     "@types/which": "^2.0.2",
     "@types/yargs-parser": "^21.0.0"
   },
-  "bin": "dist/index.js",
+  "bin": "dist/bin.js",
   "scripts": {
     "clean": "node src/tools/cleanup --no-banner",
-    "build": "yarn clean && tsc -p tsconfig.functions.json && tsc && yarn postBuild",
+    "build": "yarn clean && tsc && yarn postBuild",
     "postBuild": "node dist/postBuild.js",
-    "lint": "node dist lint --no-banner",
-    "format": "node dist format --no-banner",
-    "validate": "node dist validate",
-    "test": "node dist test",
-    "script": "node dist"
+    "lint": "node dist/bin.js lint --no-banner",
+    "format": "node dist/bin.js format --no-banner",
+    "validate": "node dist/bin.js validate",
+    "test": "node dist/bin.js test",
+    "script": "node dist/bin.js"
   },
   "dependencies": {
     "@types/eslint": "^8.21.1",
