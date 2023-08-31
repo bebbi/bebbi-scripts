@@ -1,9 +1,9 @@
 // https://patorjk.com/software/taag
 // Escape \, `.
-export const bebbiArt = `        |---.,---.|---.|---.o   ,---.,---.,---.o,---.|--- ,---.
+export const bebbiArt = `\n         |---.,---.|---.|---.o   ,---.,---.,---.o,---.|--- ,---.
 with ❤️   |   ||---'|   ||   ||---\`---.|    |    ||   ||    \`---.
          \`---'\`---'\`---'\`---'\`   \`---'\`---'\`    \`|---'\`---'\`---'`
 
 export const signOff = () => {
-  console.log('\n', bebbiArt)
+  console.log(bebbiArt)
 }
