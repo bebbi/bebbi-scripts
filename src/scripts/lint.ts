@@ -10,11 +10,12 @@ const here = (p: string) => path.join(__dirname, p)
 const hereRelative = (p: string) => here(p).replace(process.cwd(), '.')
 const parsedArgs = yargsParser(args)
 
-const useBuiltinConfig =
-  !args.includes('--config') &&
-  !hasFile('.eslintrc') &&
-  !hasFile('.eslintrc.js') &&
-  !hasPkgProp('eslintConfig')
+// Using react-app-eslint-config, no need to pass a config.
+const useBuiltinConfig = false
+// !args.includes('--config') &&
+// !hasFile('.eslintrc') &&
+// !hasFile('.eslintrc.js') &&
+// !hasPkgProp('eslintConfig')
 
 const config = useBuiltinConfig
   ? ['--config', hereRelative('../config/eslintrc.js')]

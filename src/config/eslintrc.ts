@@ -1,13 +1,8 @@
-import { ifAnyDep } from '../utils'
-
+// This default config is currently not used as eslint-config-react-app automatically adds one.
+// Together with this: /eslint.js with:
+// module.exports = require('./dist/cjs/config/eslintrc')
 const config = {
-  extends: [
-    require.resolve('eslint-config-kentcdodds'),
-    require.resolve('eslint-config-kentcdodds/jest'),
-    ifAnyDep('react', require.resolve('eslint-config-kentcdodds/jsx-a11y')),
-    ifAnyDep('react', require.resolve('eslint-config-kentcdodds/react')),
-  ].filter(Boolean),
-  rules: {},
+  extends: ['react-app'],
 }
 
 export = config

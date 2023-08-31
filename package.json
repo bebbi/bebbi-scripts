@@ -58,7 +58,6 @@
     "cross-spawn": "^7.0.3",
     "doctoc": "^2.2.1",
     "eslint": "^8.47.0",
-    "eslint-config-kentcdodds": "^20.5.0",
     "eslint-config-react-app": "^7.0.1",
     "glob": "^10.3.3",
     "husky": "^8.0.3",
