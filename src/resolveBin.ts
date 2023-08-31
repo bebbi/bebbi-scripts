@@ -4,7 +4,7 @@ import which from 'which'
 
 export const resolveBin = (
   modName: string,
-  { executable = modName, cwd = process.cwd() } = {}
+  { executable = modName, cwd = process.cwd() } = {},
 ) => {
   let pathFromWhich: string = ''
   try {

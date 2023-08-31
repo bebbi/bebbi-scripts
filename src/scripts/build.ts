@@ -28,7 +28,7 @@ const confAppDir = crypto.createHash('md5').update(appDirectory).digest('hex')
 fs.cpSync(
   hereRelative('../config/tsconfig'),
   hereRelative(`../config/${confAppDir}`),
-  { recursive: true }
+  { recursive: true },
 )
 // this converts the tsconfig.js files copied in the previous step over to tsconfig.json files
 const makeTsConfig =
@@ -42,7 +42,7 @@ const useBuiltinConfig = !args.includes('--project')
 const buildTypes = ['cjs', 'esm', 'types'] as const
 
 const passThroughArgs = [...args].filter(
-  (a) => !(buildTypes as unknown as string[]).includes(a)
+  (a) => !(buildTypes as unknown as string[]).includes(a),
 )
 
 const getPackageBuildProps = (): Partial<
@@ -54,7 +54,7 @@ const getPackageBuildProps = (): Partial<
     const res = Object.fromEntries(
       buildTypes.map((b) => {
         return [b, build.map((arg: unknown) => arg?.toString() ?? '')]
-      })
+      }),
     )
     return res
   }
@@ -65,7 +65,7 @@ const getPackageBuildProps = (): Partial<
     if (typeof build.cjs === 'string') buildConfig.cjs = [build.cjs]
     if (Array.isArray(build.cjs)) {
       buildConfig.cjs = build.cjs.filter(
-        (arg: unknown) => typeof arg === 'string'
+        (arg: unknown) => typeof arg === 'string',
       )
     }
   }
@@ -73,7 +73,7 @@ const getPackageBuildProps = (): Partial<
     if (typeof build.esm === 'string') buildConfig.esm = [build.esm]
     if (Array.isArray(build.esm)) {
       buildConfig.esm = build.esm.filter(
-        (arg: unknown) => typeof arg === 'string'
+        (arg: unknown) => typeof arg === 'string',
       )
     }
   }
@@ -82,7 +82,7 @@ const getPackageBuildProps = (): Partial<
     if (typeof build.types === 'string') buildConfig.types = [build.types]
     if (Array.isArray(build.types)) {
       buildConfig.types = build.types.filter(
-        (arg: unknown) => typeof arg === 'string'
+        (arg: unknown) => typeof arg === 'string',
       )
     }
   }
@@ -145,22 +145,22 @@ export const compileToOptions: Record<(typeof buildTypes)[number], string> = {
 
 let compileTo = parsedArgs._.length
   ? parsedArgs._.map((o) => o.toString()).filter((o) =>
-      (buildTypes as unknown as string[]).includes(o)
+      (buildTypes as unknown as string[]).includes(o),
     )
   : (buildTypes as unknown as string[])
 
 if (compileTo.length < 1) {
   console.warn(
     `CAUTION: Did not find one of the build types in argument list specified, so by default building all of the build types: ${Object.keys(
-      compileToOptions
-    )}. If this is unexpected, run the \`clean\` script and specify your desired build type.`
+      compileToOptions,
+    )}. If this is unexpected, run the \`clean\` script and specify your desired build type.`,
   )
   compileTo = buildTypes as unknown as string[]
 }
 
 const go = () => {
   const buildScripts: Record<string, string> = Object.fromEntries(
-    Object.entries(compileToOptions).filter(([opt]) => compileTo.includes(opt))
+    Object.entries(compileToOptions).filter(([opt]) => compileTo.includes(opt)),
   )
   if (isBebbiScripts()) {
     if (!parsedArgs._.includes('test')) {
@@ -175,18 +175,18 @@ const go = () => {
   if (useBuiltinConfig) {
     if (Object.keys(buildScripts).length > 1 && passThroughArgs.length > 1) {
       console.warn(
-        `WARNING!: Using more than one build type with passed through args. Each build type will be given the passed through args. If this was not the intention, then call the builds independently specifying the build type.`
+        `WARNING!: Using more than one build type with passed through args. Each build type will be given the passed through args. If this was not the intention, then call the builds independently specifying the build type.`,
       )
     }
     const result = spawn.sync(
       resolveBin('concurrently'),
       getConcurrentlyArgs(buildScripts),
-      { stdio: 'inherit' }
+      { stdio: 'inherit' },
     )
     return result.status ?? undefined
   }
   const result = spawn.sync(
-    [resolveBin('typescript', { executable: 'tsc' }), ...args].join(' ')
+    [resolveBin('typescript', { executable: 'tsc' }), ...args].join(' '),
   )
   return result.status ?? undefined
 }

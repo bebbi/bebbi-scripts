@@ -11,7 +11,7 @@ const buildOptions = ['cjs', 'esm', 'types', 'umd']
 
 const cleanDirs = parsedArgs._.length
   ? parsedArgs._.map((o) => o.toString()).filter((o) =>
-      buildOptions.includes(o)
+      buildOptions.includes(o),
     )
   : []
 
@@ -24,8 +24,8 @@ if (!isBebbiScripts() && cleanDirs.length > 0) {
   if (parsedArgs._.length) {
     console.error(
       `Arguments were provided that did not match build options: \`${parsedArgs._.join(
-        '`, `'
-      )}\``
+        '`, `',
+      )}\``,
     )
     process.exit(1)
   }

@@ -34,7 +34,7 @@ const filesToApply = parsedArgs._.length
 const result = spawn.sync(
   resolveBin('prettier'),
   [...config, ...ignore, ...write, ...filesToApply].concat(relativeArgs),
-  { stdio: 'inherit' }
+  { stdio: 'inherit' },
 )
 
 process.exit(result.status ?? undefined)

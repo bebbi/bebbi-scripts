@@ -16,7 +16,7 @@ export const jestConfig: jest.Config = {
   testEnvironment: ifAnyDep(
     ['webpack', 'rollup', 'react', 'preact'],
     'jsdom',
-    'node'
+    'node',
   ),
   testEnvironmentOptions: {
     url: 'http://localhost',

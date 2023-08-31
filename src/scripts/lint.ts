@@ -52,14 +52,14 @@ if (filesGiven) {
   // and filter out the ones that aren't js files. Otherwise json or css files
   // may be passed through
   args = args.filter(
-    (a) => !parsedArgs._.includes(a) || extensions.some((e) => a.endsWith(e))
+    (a) => !parsedArgs._.includes(a) || extensions.some((e) => a.endsWith(e)),
   )
 }
 
 const result = spawn.sync(
   resolveBin('eslint'),
   [...config, ...ext, ...ignore, ...cache, ...args, ...filesToApply],
-  { stdio: 'inherit' }
+  { stdio: 'inherit' },
 )
 
 process.exit(result.status ?? undefined)

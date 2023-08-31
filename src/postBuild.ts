@@ -5,6 +5,6 @@ fs.readdirSync('./src/config/', { encoding: 'utf-8' })
   .forEach((file) => {
     fs.copyFileSync(
       `./src/config/${file}`,
-      `./dist/config/${file.substring(1)}`
+      `./dist/config/${file.substring(1)}`,
     )
   })

@@ -20,7 +20,7 @@ const validateScripts = useDefaultScripts
         ...scriptsToRun,
         [name]: `yarn ${name}`,
       }),
-      {}
+      {},
     )
 
 const scriptCount = Object.values(validateScripts).filter(Boolean).length
@@ -29,7 +29,7 @@ if (scriptCount > 0) {
   const result = spawn.sync(
     resolveBin('concurrently'),
     getConcurrentlyArgs(validateScripts),
-    { stdio: 'inherit' }
+    { stdio: 'inherit' },
   )
 
   process.exit(result.status ?? undefined)

@@ -90,7 +90,7 @@ export const ifPkgSubProp =
   <T = string | undefined, F = string | undefined>(
     props: OneOrMany<string>,
     t?: T,
-    f?: F
+    f?: F,
   ): T | F extends undefined ? T | F | undefined : T | F =>
     hasPkgSubProp(pkgProp)(props) ? (t as T) : (f as F)
 
@@ -107,7 +107,7 @@ export const hasAnyDep = (args: OneOrMany<string>) =>
 export const ifAnyDep = <T = OneOrMany<string>, F = OneOrMany<string>>(
   deps: OneOrMany<string>,
   t?: T,
-  f?: F
+  f?: F,
 ) => (hasAnyDep(arrify(deps)) ? (t as T) : (f as F))
 
 export const ifScript = ifPkgSubProp('scripts')
@@ -147,7 +147,7 @@ export const parseEnv = <D>(name: string, def: D): D | unknown => {
 
 export const getConcurrentlyArgs = (
   scriptsPassed: Record<string, string>,
-  { killOthers = true } = {}
+  { killOthers = true } = {},
 ) => {
   const colors = [
     'bgBlue',
@@ -171,7 +171,7 @@ export const getConcurrentlyArgs = (
     .reduce<string[]>(
       (pColors, _s, i) =>
         pColors.concat([`${colors[i % colors.length]}.bold.white`]),
-      []
+      [],
     )
     .join(',')
 
@@ -203,13 +203,13 @@ export const getEnv = (script: string) => {
       },
       {
         [`SCRIPTS_${script.toUpperCase().replace(/-/g, '_')}`]: 'true',
-      }
+      },
     )
 }
 
 export const hasLocalConfig = (
   moduleName: string,
-  searchOptions?: Parameters<typeof cosmiconfigSync>[1]
+  searchOptions?: Parameters<typeof cosmiconfigSync>[1],
 ) => {
   const explorerSync = cosmiconfigSync(moduleName, searchOptions)
   const result = explorerSync.search(pkgPath)
@@ -218,21 +218,21 @@ export const hasLocalConfig = (
 
 export const handleSignal = (
   script: string,
-  res: ReturnType<typeof spawn.sync>
+  res: ReturnType<typeof spawn.sync>,
 ) => {
   if (res.signal === 'SIGKILL') {
     console.log(
       bebbiArt,
       `The script "${script}" failed because the process exited too early. `,
       'This probably means the system ran out of memory or someone called ',
-      '`kill -9` on the process.'
+      '`kill -9` on the process.',
     )
   } else if (res.signal === 'SIGTERM') {
     console.log(
       bebbiArt,
       `The script "${script}" failed because the process exited too early. `,
       'Someone might have called `kill` or `killall`, or the system could ',
-      'be shutting down.'
+      'be shutting down.',
     )
   }
   signOff()
