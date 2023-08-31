@@ -7,6 +7,6 @@ module.exports = {
   compilerOptions: {
     module: 'commonjs',
     declaration: false,
-    outDir: `${appDirectory}/dist/udm`,
+    outDir: `${appDirectory}/dist/umd`,
   },
 }
