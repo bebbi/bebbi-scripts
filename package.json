@@ -13,6 +13,8 @@
   ],
   "exports": {
     ".": "./dist/functions.js"
+    "./tsconfig.json": "./tsconfig.json",
+    "./tsconfig": "./tsconfig.json"
   },
   "repository": {
     "type": "git",
