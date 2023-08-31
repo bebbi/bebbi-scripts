@@ -22,13 +22,9 @@ if (cleanDirs.length > 0) {
   })
 } else {
   if (parsedArgs._.length) {
-    console.error(
-      `Arguments were provided that did not match build options: \`${parsedArgs._.join(
-        '`, `',
-      )}\``,
-    )
-    process.exit(1)
+    throw new Error(`🚫 Invalid argument passed: \`${parsedArgs._.join('`, `')}\``)
   }
+
   console.log(`Deleting: ${appDirectory}/dist`)
   rimrafSync(`${appDirectory}/dist`)
 }

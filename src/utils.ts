@@ -251,3 +251,8 @@ export const stdInput = () => {
     })
   })
 }
+
+const errorRe = /🚫.*/g
+export function extractErrorMsg(str: string) {
+  return str.match(errorRe)?.slice(-1)?.[0]
+}

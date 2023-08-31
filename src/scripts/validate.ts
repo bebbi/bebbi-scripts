@@ -32,7 +32,7 @@ if (scriptCount > 0) {
     { stdio: 'inherit' },
   )
 
-  process.exit(result.status ?? undefined)
+  process.exit(result.status ?? 0)
 } else {
   process.exit(0)
 }

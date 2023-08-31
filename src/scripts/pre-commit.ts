@@ -32,7 +32,7 @@ const go = () => {
     stdio: 'inherit',
   })
 
-  return result.status ?? undefined
+  return result.status ?? 0
 }
 
 process.exit(go())

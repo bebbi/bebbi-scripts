@@ -150,7 +150,7 @@ let compileTo = parsedArgs._.length
 
 if (compileTo.length < 1) {
   console.warn(
-    `CAUTION: Did not find one of the build types in argument list specified, so by default building all of the build types: ${Object.keys(
+    `⚠️ Did not find one of the build types in argument list specified, so by default building all of the build types: ${Object.keys(
       compileToOptions,
     )}. If this is unexpected, run the \`clean\` script and specify your desired build type.`,
   )
@@ -164,7 +164,7 @@ const go = () => {
   if (useBuiltinConfig) {
     if (Object.keys(buildScripts).length > 1 && passThroughArgs.length > 1) {
       console.warn(
-        `WARNING!: Using more than one build type with passed through args. Each build type will be given the passed through args. If this was not the intention, then call the builds independently specifying the build type.`,
+        `⚠️ Using more than one build type with passed through args. Each build type will be given the passed through args. If this was not the intention, then call the builds independently specifying the build type.`,
       )
     }
     const result = spawn.sync(
@@ -177,7 +177,7 @@ const go = () => {
   const result = spawn.sync(
     [resolveBin('typescript', { executable: 'tsc' }), ...args].join(' '),
   )
-  return result.status ?? undefined
+  return result.status ?? 0
 }
 
 makeTsConfig()

@@ -1,11 +1,13 @@
 import path from 'path'
 import { sync } from 'cross-spawn'
+
 import {
   attemptResolve,
   getEnv,
   handleSignal,
   availableScriptNames,
   getScriptsDir,
+  extractErrorMsg,
 } from './utils'
 import { signOff } from './bebbiArt'
 
@@ -37,15 +39,27 @@ export const spawnScript = (
     executor,
     nodeArgs.concat(scriptPath).concat(args.slice(scriptIndex + 1)),
     {
-      stdio: 'inherit',
+      stdio: ['inherit', 'inherit', 'pipe'],
       env: getEnv(script),
     },
   )
-
   if (result.signal) {
     handleSignal(script, result)
   } else {
-    if (!noBanner) signOff()
-    process.exit(result.status ?? undefined)
+    if (result.status) {
+      const error = result.stderr?.toString() ?? ''
+
+      const maybeUserError = extractErrorMsg(error)
+      debugger
+      if (!maybeUserError) {
+        console.error('🚫 The script exited with an unknown error:\n')
+      }
+
+      console.error('\n' + (maybeUserError ?? error))
+    }
+
+    !result.status && !noBanner && signOff()
+
+    process.exit(result.status ?? 0)
   }
 }

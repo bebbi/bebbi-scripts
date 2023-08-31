@@ -60,7 +60,7 @@ if (filesGiven) {
 const result = spawn.sync(
   resolveBin('eslint'),
   [...config, ...ext, ...ignore, ...cache, ...args, ...filesToApply],
-  { stdio: 'inherit' },
+  { stdio: ['inherit', 'inherit', 'inherit'] },
 )
 
-process.exit(result.status ?? undefined)
+process.exit(result.status ?? 0)

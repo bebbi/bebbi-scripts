@@ -16,7 +16,7 @@ const parsedArgs = yargsParser(args)
 
 if (!parsedArgs.project && !parsedArgs.build && !hasFile('tsconfig.json')) {
   throw new Error(
-    'Cannot use the "typecheck" script without --project or --build in a project that does not have a tsconfig.json file.',
+    '🚫 Cannot use the "typecheck" script without --project or --build in a project that does not have a tsconfig.json file.',
   )
 }
 
@@ -35,4 +35,4 @@ const result = spawn.sync(
   },
 )
 
-process.exit(result.status ?? undefined)
+process.exit(result.status ?? 0)

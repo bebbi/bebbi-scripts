@@ -34,9 +34,14 @@ const filesToApply = parsedArgs._.length
 const result = spawn.sync(
   resolveBin('prettier'),
   [...config, ...ignore, ...write, ...filesToApply].concat(relativeArgs),
-  { stdio: 'inherit' },
+  { stdio: ['inherit', 'inherit', 'pipe'] },
 )
 
-process.exit(result.status ?? undefined)
+if (result.status && result.stderr) {
+  throw new Error(result.stderr.toString())
+}
+
+process.exit(result.status ?? 0)
+
 
 // prettier --config ./dist/config/prettierrc.js --ignore-path ./dist/config/prettierignore --write '**/*.+(js|jsx|json|yml|yaml|css|less|scss|ts|tsx|md|gql|graphql|mdx|vue)'
