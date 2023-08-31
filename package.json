@@ -40,7 +40,7 @@
   "bin": "dist/cjs/bin.js",
   "scripts": {
     "clean": "rimraf tmpdist dist",
-    "build": "yarn clean && tsc --outDir tmpdist && node tmpdist/bin.js build cjs types && rimraf tmpdist && yarn postBuild",
+    "build": "yarn clean && tsc --outDir tmpdist && node tmpdist/bin.js build cjs types --no-banner && rimraf tmpdist && yarn postBuild",
     "postBuild": "node dist/cjs/postBuild.js",
     "lint": "node dist/cjs/bin.js lint --no-banner",
     "format": "node dist/cjs/bin.js format --no-banner",
