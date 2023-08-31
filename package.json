@@ -11,8 +11,15 @@
     "index.d.ts",
     "eslint.js"
   ],
+  "main": "dist/cjs/index.js",
+  "types": "dist/types/index.d.ts",
   "exports": {
-    ".": "./dist",
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "development": "./src/index.ts",
+      "production": "./dist/cjs/index.js",
+      "default": "./dist/cjs/index.js"
+    },
     "./tsconfig.json": "./tsconfig.json",
     "./tsconfig": "./tsconfig.json"
   },
@@ -30,16 +37,16 @@
     "@types/which": "^2.0.2",
     "@types/yargs-parser": "^21.0.0"
   },
-  "bin": "dist/bin.js",
+  "bin": "dist/cjs/bin.js",
   "scripts": {
-    "clean": "node src/tools/cleanup --no-banner",
-    "build": "yarn clean && tsc && yarn postBuild",
-    "postBuild": "node dist/postBuild.js",
-    "lint": "node dist/bin.js lint --no-banner",
-    "format": "node dist/bin.js format --no-banner",
-    "validate": "node dist/bin.js validate",
-    "test": "node dist/bin.js test",
-    "script": "node dist/bin.js"
+    "clean": "rimraf tmpdist dist",
+    "build": "yarn clean && tsc --outDir tmpdist && node tmpdist/bin.js build cjs types && rimraf tmpdist && yarn postBuild",
+    "postBuild": "node dist/cjs/postBuild.js",
+    "lint": "node dist/cjs/bin.js lint --no-banner",
+    "format": "node dist/cjs/bin.js format --no-banner",
+    "validate": "node dist/cjs/bin.js validate",
+    "test": "node dist/cjs/bin.js test",
+    "script": "node dist/cjs/bin.js"
   },
   "dependencies": {
     "@types/eslint": "^8.21.1",

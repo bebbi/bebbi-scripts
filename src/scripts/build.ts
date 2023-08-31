@@ -7,7 +7,6 @@ import {
   appDirectory,
   getConcurrentlyArgs,
   hasPkgProp,
-  isBebbiScripts,
   OneOrMany,
   pkg,
   resolveBin,
@@ -162,16 +161,6 @@ const go = () => {
   const buildScripts: Record<string, string> = Object.fromEntries(
     Object.entries(compileToOptions).filter(([opt]) => compileTo.includes(opt)),
   )
-  if (isBebbiScripts()) {
-    if (!parsedArgs._.includes('test')) {
-      const result = spawn.sync(resolveBin('yarn'), ['build'], {
-        stdio: 'inherit',
-      })
-      return result.status ?? undefined
-    }
-    console.log(JSON.stringify(buildScripts))
-    return undefined
-  }
   if (useBuiltinConfig) {
     if (Object.keys(buildScripts).length > 1 && passThroughArgs.length > 1) {
       console.warn(
