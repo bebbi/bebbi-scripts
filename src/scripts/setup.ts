@@ -20,7 +20,7 @@ console.log('Running `bebbi-scripts setup`, Please wait...')
 
 if (isBebbiScripts()) {
   console.log('ERROR: Run this setup script from parent packages only!')
-  process.exit(0)
+  process.exit(1)
 }
 
 const hasGit = fs.existsSync('.git')
