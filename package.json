@@ -7,7 +7,6 @@
   "files": [
     "dist",
     "tsconfig.json",
-    "extend.tsconfig.json",
     "index.d.ts",
     "eslint.js"
   ],

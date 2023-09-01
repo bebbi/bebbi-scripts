@@ -3,7 +3,7 @@ import fs from 'fs'
 import spawn from 'cross-spawn'
 import { fromRoot, isBebbiScripts, pkg, resolveBin } from '../utils'
 
-const BEBBI_EXTENDS = 'bebbi-scripts/extend.tsconfig.json'
+const BEBBI_EXTENDS = 'bebbi-scripts/tsconfig.json'
 
 const SCRIPTS = {
   clean: 'bebbi-scripts clean',
