@@ -1,14 +1,11 @@
 import path from 'path'
 import { sync } from 'cross-spawn'
-import { trimNewlines } from './utils'
-
 import {
   attemptResolve,
   getEnv,
   handleSignal,
   availableScriptNames,
   getScriptsDir,
-  extractErrorMsg,
 } from './utils'
 import { signOff } from './bebbiArt'
 
@@ -40,27 +37,13 @@ export const spawnScript = (
     executor,
     nodeArgs.concat(scriptPath).concat(args.slice(scriptIndex + 1)),
     {
-      stdio: ['inherit', 'inherit', 'pipe'],
+      stdio: 'inherit',
       env: getEnv(script),
     },
   )
   if (result.signal) {
     handleSignal(script, result)
   } else {
-    if (result.status) {
-      const error = trimNewlines(result.stderr?.toString()) ?? ''
-
-      const maybeUserError = extractErrorMsg(error)
-
-      if (!maybeUserError) {
-        console.error(`🚫 The script exited with a non-zero error status.\n`)
-      }
-
-      if (maybeUserError || error) {
-        console.error('\n' + (maybeUserError ?? error))
-      }
-    }
-
     !result.status && !noBanner && signOff()
 
     process.exit(result.status ?? 0)

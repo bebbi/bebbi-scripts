@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { spawnScript, help } from './'
+import { spawnScript, help, log } from './'
 
 const [executor, , script] = process.argv
 
@@ -10,7 +10,7 @@ if (script && script !== '--help' && script !== 'help') {
     if (
       (err as { message: string })?.message?.indexOf('Unknown script') !== -1
     ) {
-      console.log(`🚫 script "${script}" not found\n`)
+      log.error(`script "${script}" not found`)
       help()
       process.exit(1)
     } else {

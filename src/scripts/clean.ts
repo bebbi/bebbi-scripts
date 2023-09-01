@@ -1,6 +1,6 @@
 import { rimrafSync } from 'rimraf'
 import yargsParser from 'yargs-parser'
-import { appDirectory } from '../utils'
+import { appDirectory, log } from '..'
 
 console.log('Running `bebbi-scripts clean`, Please wait...')
 
@@ -22,9 +22,10 @@ if (cleanDirs.length > 0) {
   })
 } else {
   if (parsedArgs._.length) {
-    throw new Error(`🚫 Invalid argument passed: \`${parsedArgs._.join('`, `')}\``)
+    log.error(`Invalid argument passed: \`${parsedArgs._.join('`, `')}\``)
+    process.exit(1)
   }
 
-  console.log(`Deleting: ${appDirectory}/dist`)
   rimrafSync(`${appDirectory}/dist`)
+  log.success(`Deleted: ${appDirectory}/dist`)
 }

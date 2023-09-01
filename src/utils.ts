@@ -252,11 +252,14 @@ export const stdInput = () => {
   })
 }
 
-export function extractErrorMsg(str: string) {
-  return str.match(/🚫.*/g)?.slice(-1)?.[0]
-}
-
-export function trimNewlines(input: string): string {
-  // Use regular expressions to remove newlines at the beginning and end of the string
-  return input.replace(/^\n+|\n+$/g, '')
+export const log = {
+  error(message: string) {
+    console.error(`🚫 ${message}\n`)
+  },
+  warn(message: string) {
+    console.warn(`⚠️ ${message}`)
+  },
+  success(message: string) {
+    console.log(`✅ ${message}`)
+  },
 }

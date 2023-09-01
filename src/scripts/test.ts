@@ -26,6 +26,4 @@ const config =
     ? ['--config', JSON.stringify(jestConfig)]
     : []
 
-run([...config, ...watch, ...args])
-  .then(() => {})
-  .catch(() => {})
+run([...config, ...watch, ...args]).catch(() => {})

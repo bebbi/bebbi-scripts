@@ -10,6 +10,7 @@ import {
   OneOrMany,
   pkg,
   resolveBin,
+  log,
 } from '../utils'
 
 console.log('Running `bebbi-scripts build`, Please wait...')
@@ -149,8 +150,8 @@ let compileTo = parsedArgs._.length
   : (buildTypes as unknown as string[])
 
 if (compileTo.length < 1) {
-  console.warn(
-    `⚠️ Did not find one of the build types in argument list specified, so by default building all of the build types: ${Object.keys(
+  log.warn(
+    `Did not find one of the build types in argument list specified, so by default building all of the build types: ${Object.keys(
       compileToOptions,
     )}. If this is unexpected, run the \`clean\` script and specify your desired build type.`,
   )
@@ -163,8 +164,8 @@ const go = () => {
   )
   if (useBuiltinConfig) {
     if (Object.keys(buildScripts).length > 1 && passThroughArgs.length > 1) {
-      console.warn(
-        `⚠️ Using more than one build type with passed through args. Each build type will be given the passed through args. If this was not the intention, then call the builds independently specifying the build type.`,
+      log.warn(
+        `Using more than one build type with passed through args. Each build type will be given the passed through args. If this was not the intention, then call the builds independently specifying the build type.`,
       )
     }
     const result = spawn.sync(

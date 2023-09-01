@@ -1,7 +1,7 @@
 import { SpawnSyncReturns } from 'child_process'
 import fs from 'fs'
 import spawn from 'cross-spawn'
-import { fromRoot, isBebbiScripts, pkg, resolveBin } from '../utils'
+import { fromRoot, isBebbiScripts, pkg, resolveBin, log } from '..'
 
 const BEBBI_EXTENDS = 'bebbi-scripts/tsconfig.json'
 
@@ -19,7 +19,8 @@ const SCRIPTS = {
 console.log('Running `bebbi-scripts setup`, Please wait...')
 
 if (isBebbiScripts()) {
-  throw new Error('🚫 Run this setup script from parent packages only!')
+  log.error('Run this setup script from parent packages only!')
+  process.exit(1)
 }
 
 const hasGit = fs.existsSync('.git')
@@ -36,7 +37,7 @@ const initYarnConfig = async () => {
           if (line.startsWith('nodeLinker:')) {
             if (!line.includes('node-modules')) {
               errMsg =
-                '🚫 A `.yarnrc.yml` config file was found with an unsupported `nodeLinker` value. Only node-modules is supported at the time.'
+                'A `.yarnrc.yml` config file was found with an unsupported `nodeLinker` value. Only node-modules is supported at the time.'
             }
             nodeLinkerFound = true
           }
@@ -44,7 +45,8 @@ const initYarnConfig = async () => {
         })
 
         if (errMsg) {
-          throw new Error(errMsg)
+          log.error(errMsg)
+          process.exit(1)
         }
         /* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */
         if (!nodeLinkerFound) lines.push('nodeLinker: node-modules\n')
@@ -82,7 +84,8 @@ function initHusky(): boolean {
     )
 
   if (installScripts.some((r) => r.status !== 0)) {
-    throw new Error('🚫 husky installation failed.')
+    log.error('Husky installation failed.')
+    process.exit(1)
   }
 
   if (hasGit) {
@@ -99,7 +102,8 @@ function initHusky(): boolean {
         { encoding: 'utf-8' },
       )
     } catch (err) {
-      throw new Error('🚫 Writing husky pre-commit script failed.')
+      log.error('Writing husky pre-commit script failed.')
+      process.exit(1)
     }
   }
 
@@ -112,14 +116,16 @@ function addPkgJsonScripts() {
   let pkgJSON: typeof pkg
 
   if (!data) {
-    throw new Error('🚫 `package.json` appears empty')
+    log.error('`package.json` appears empty')
+    process.exit(1)
   }
 
   try {
     // typeof pkg = Something | undefined
     pkgJSON = (JSON.parse(data) as typeof pkg)!
   } catch (e: unknown) {
-    throw new Error('🚫 Could not parse package.json as json')
+    log.error('Could not parse package.json as json')
+    process.exit(1)
   }
 
   pkgJSON.scripts = pkgJSON.scripts ?? {}
@@ -128,17 +134,18 @@ function addPkgJsonScripts() {
     // TODO: TS assert shouldn't be needed
     const val = pkgJSON!.scripts![key]
     if (val) {
-      console.warn(`⚠️ Skipping existing script key ${key}`)
+      log.warn(`Skipping existing script key ${key}`)
       return
     }
-    console.log(`✅ Adding script key ${key}`)
+    log.success(`Adding script key ${key}`)
     pkgJSON!.scripts![key] = value
   })
 
   try {
     fs.writeFileSync('package.json', JSON.stringify(pkgJSON, undefined, 2))
   } catch (err) {
-    throw new Error('🚫 Failed to write to package.json')
+    log.error('Failed to write to package.json')
+    process.exit(1)
   }
 
   return true
@@ -162,7 +169,8 @@ async function initScriptsConfig(): Promise<boolean> {
   )
 
   if (installPkgJson.some((r) => r.status !== 0)) {
-    throw new Error('🚫 Some package.json installation scripts failed.')
+    log.error('Some package.json installation scripts failed.')
+    process.exit(1)
   }
 
   const success1 = addPkgJsonScripts()
@@ -180,13 +188,15 @@ function initTsConfig(): boolean {
     const data = fs.readFileSync(tsConfigPath, { encoding: 'utf-8' })
 
     if (!data) {
-      throw new Error('🚫 Empty tsconfig.json found.')
+      log.error('Empty tsconfig.json found.')
+      process.exit(1)
     }
 
     try {
       tsConfig = JSON.parse(data) as Record<string, unknown>
     } catch (err) {
-      throw new Error('🚫 Could not read tsconfig.json (invalid json?)')
+      log.error('Could not read tsconfig.json (invalid json?)')
+      process.exit(1)
     }
   }
 
@@ -212,7 +222,8 @@ function initTsConfig(): boolean {
         { encoding: 'utf-8' },
       )
     } catch (err) {
-      throw new Error('🚫 Writing tsconfig.json failed')
+      log.error('Writing tsconfig.json failed')
+      process.exit(1)
     }
   }
 
@@ -221,21 +232,23 @@ function initTsConfig(): boolean {
 
 async function run() {
   if (!(await initYarnConfig())) {
-    throw new Error('🚫 The yarn config file failed to initialize.')
+    log.error('The yarn config file failed to initialize.')
+    process.exit(1)
   }
 
   if (!(await initScriptsConfig())) {
-    throw new Error('🚫 The `package.json` scripts failed to initialize.')
+    log.error('The `package.json` scripts failed to initialize.')
+    process.exit(1)
   }
 
   if (!(await initTsConfig())) {
-    console.warn('⚠️ `tsconfig.json` unchanged.')
+    log.warn('`tsconfig.json` unchanged.')
   }
 
   console.log(
     hasGit
-      ? console.log('✅ husky git hooks installed')
-      : console.warn('⚠️ Missing .git: skipping husky git hooks'),
+      ? log.success('husky git hooks installed')
+      : log.warn('Missing .git: skipping husky git hooks'),
   )
 
   process.exit(0)

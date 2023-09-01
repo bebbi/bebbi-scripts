@@ -1,6 +1,6 @@
 import spawn from 'cross-spawn'
 import yargsParser from 'yargs-parser'
-import { /* hasAnyDep, */ resolveBin, hasFile } from '../utils'
+import { /* hasAnyDep, */ resolveBin, hasFile, log } from '..'
 
 console.log('Running `bebbi-scripts typecheck`, Please wait...')
 
@@ -15,9 +15,10 @@ const parsedArgs = yargsParser(args)
 // }
 
 if (!parsedArgs.project && !parsedArgs.build && !hasFile('tsconfig.json')) {
-  throw new Error(
-    '🚫 Cannot use the "typecheck" script without --project or --build in a project that does not have a tsconfig.json file.',
+  log.error(
+    'Cannot use the "typecheck" script without --project or --build in a project that does not have a tsconfig.json file.',
   )
+  process.exit(1)
 }
 
 // if --project is provided, we can't pass --build
