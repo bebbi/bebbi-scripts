@@ -1,5 +1,6 @@
 import path from 'path'
 import { sync } from 'cross-spawn'
+import { trimNewlines } from './utils'
 
 import {
   attemptResolve,
@@ -47,15 +48,17 @@ export const spawnScript = (
     handleSignal(script, result)
   } else {
     if (result.status) {
-      const error = result.stderr?.toString() ?? ''
+      const error = trimNewlines(result.stderr?.toString()) ?? ''
 
       const maybeUserError = extractErrorMsg(error)
-      debugger
+
       if (!maybeUserError) {
-        console.error('🚫 The script exited with an unknown error:\n')
+        console.error(`🚫 The script exited with a non-zero error status.\n`)
       }
 
-      console.error('\n' + (maybeUserError ?? error))
+      if (maybeUserError || error) {
+        console.error('\n' + (maybeUserError ?? error))
+      }
     }
 
     !result.status && !noBanner && signOff()
