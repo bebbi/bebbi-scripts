@@ -47,7 +47,7 @@ const initYarnConfig = async () => {
           throw new Error(errMsg)
         }
         /* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */
-        if (!nodeLinkerFound) lines.push('nodeLinker: node-modules')
+        if (!nodeLinkerFound) lines.push('nodeLinker: node-modules\n')
         fs.writeFileSync(yarnConfigPath, lines.join('\n'), {
           encoding: 'utf-8',
         })
