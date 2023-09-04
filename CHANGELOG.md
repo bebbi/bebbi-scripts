@@ -1,3 +1,7 @@
+0.3.2
+
+- Allow selecting the config source
+
 0.3.0
 
 - Change error handling so test output works again
