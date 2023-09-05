@@ -1,3 +1,7 @@
+0.4.1
+
+- Fix husky install in a .git repo that is inside a monorepo
+
 0.4.0
 
 - setup becomes init
