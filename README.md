@@ -23,17 +23,11 @@ Like kcd-scripts, but
 
 ## How
 
-1. Have a `.yarnrc.yml` config file containing:
+Inside your new module folder, run
 
-```
-nodeLinker: node-modules
-```
+1. `git init` (optional, bebbi-scripts will install pre-commit hooks)
 
-2. Inside your new workspace folder, run
-
-```sh
-yarn dlx bebbi-scripts init
-```
+2. `yarn dlx bebbi-scripts init`
 
 ### Overriding Config
 
