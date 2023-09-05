@@ -1,3 +1,7 @@
+0.4.0
+
+- setup becomes init
+
 0.3.2
 
 - Allow selecting the config source
