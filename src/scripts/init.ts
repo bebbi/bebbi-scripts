@@ -13,13 +13,12 @@ const SCRIPTS = {
   format: 'bebbi-scripts format',
   lint: 'bebbi-scripts lint',
   validate: 'bebbi-scripts validate',
-  prepare: 'husky install',
 }
 
-console.log('Running `bebbi-scripts setup`, Please wait...')
+console.log('Running `bebbi-scripts init`, Please wait...')
 
 if (isBebbiScripts()) {
-  log.error('Run this setup script from parent packages only!')
+  log.error('Run this init script from parent packages only!')
   process.exit(1)
 }
 
@@ -91,7 +90,7 @@ function initHusky(): boolean {
   if (hasGit) {
     try {
       fs.writeFileSync(
-        fromRoot('.husky/pre-commit'),
+        '.husky/pre-commit',
         [
           '#!/usr/bin/env sh',
           '. "$(dirname -- "$0")/_/husky.sh"',
