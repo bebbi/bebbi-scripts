@@ -8,15 +8,16 @@
 
 Maintain library projects.
 
-Commands for `setup`, `validate`, `test`, `lint`, `format`, `build`.
+Commands for `init`, `validate`, `test`, `lint`, `format`, `build`.
 
 Like kcd-scripts, but
 
 ✅ written in TS<br />
-✅ builds using tsc<br />
-✅ outputs esm, cjs, types<br />
+✅ tsc builds<br />
+✅ outputs `esm`, `cjs`, `types`<br />
 ✅ yarn 3<br />
 ✅ yarn monorepo<br />
+✅ run your own scripts<br />
 🚫 yarn pnp<br />
 🚫 npm
 
@@ -31,21 +32,45 @@ nodeLinker: node-modules
 2. Inside your new workspace folder, run
 
 ```sh
-yarn dlx bebbi-scripts setup
+yarn dlx bebbi-scripts init
 ```
 
 ### Overriding Config
 
-Same approach as [kcd-scripts](https://github.com/kentcdodds/kcd-scripts#overriding-config), but also extends to `tsconfig.json`
+#### tsconfig.json
 
-Run `bebbi-scripts setup` for tips on extending your `tsconfig.json`.
+```json
+{
+  "extends": "bebbi-scripts/tsconfig.json",
+  "other": "..."
+}
+```
+
+#### eslint
+
+You can extend the `react-scripts` eslint config which ships with this package.
+Example `package.json` section:
+
+```json
+{
+  "eslintConfig": {
+    "extends": ["react-app"],
+    "other": "..."
+  }
+}
+```
+
+#### Other
+
+This script adds no babel config. Check out `gig-utils` for a tool that extends `bebbi-scripts` with a config for babel and storybook.
 
 If you have a `typecheck` script (normally set to `bebbi-scripts typecheck`)
 that will be run as part of the `validate` script (which is run as part of the `pre-commit` script as well).
 
 ## Inspiration
 
-[kcd-scripts](https://github.com/kentcdodds/kcd-scripts) and [react-scripts](https://github.com/facebook/create-react-app/tree/main/packages/react-scripts).
+[kcd-scripts](https://github.com/kentcdodds/kcd-scripts)<br/>
+[react-scripts](https://github.com/facebook/create-react-app/tree/main/packages/react-scripts)
 
 ## 💡 Bugs and Features
 
@@ -54,7 +79,8 @@ Help us by adding pull requests to issues!
 ## Contributors
 
 [amaster507](https://github.com/amaster507)<br />
-[verneleem](https://github.com/verneleem)
+[verneleem](https://github.com/verneleem)<br />
+[bebbi](https://github.com/bebbi)
 
 ## License
 
