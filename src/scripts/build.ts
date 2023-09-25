@@ -33,7 +33,7 @@ fs.cpSync(
 // this converts the tsconfig.js files copied in the previous step over to tsconfig.json files
 const makeTsConfig =
   /* eslint-disable @typescript-eslint/no-var-requires */
-  (require(`../config/${confAppDir}`) as Record<'config', () => Promise<void>>)
+  (require(path.join('../config', confAppDir)) as Record<'config', () => Promise<void>>)
     .config as () => Promise<void>
 /* eslint-enable @typescript-eslint/no-var-requires */
 

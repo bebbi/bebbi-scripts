@@ -14,7 +14,7 @@ export const resolveBin = (
     // ignore error
   }
   try {
-    const modPkgPath = require.resolve(`${modName}/package.json`)
+    const modPkgPath = require.resolve(path.join(modName, 'package.json'))
     const modPkgDir = path.dirname(modPkgPath)
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { bin } = require(modPkgPath) as {

@@ -35,9 +35,9 @@ export const workSpaceDir = (maxPkgDepth = 2): string | null => {
   }
   let lastPkgPath = pkgPath
   while (lastPkgPath.endsWith('.json') && maxPkgDepth > 0) {
-    const nextPath = lastPkgPath.split('/')
+    const nextPath = lastPkgPath.split(path.sep)
     nextPath.splice(-2)
-    const tryNextPath = nextPath.join('/')
+    const tryNextPath = nextPath.join(path.sep)
     if (tryNextPath !== '') {
       maxPkgDepth--
       const { packageJson: upPackageJson, path: upPath = '' } =
@@ -68,7 +68,7 @@ export const isBebbiScripts = () => pkg?.name === 'bebbi-scripts'
 
 export const resolveBebbiScripts = () => {
   if (isBebbiScripts() || appDirectory.includes(path.join(__dirname, '..'))) {
-    return require.resolve('./').replace(process.cwd(), '.')
+    return require.resolve('.').replace(process.cwd(), '.')
   }
   return resolveBin('bebbi-scripts')
 }
@@ -113,7 +113,7 @@ export const ifAnyDep = <T = OneOrMany<string>, F = OneOrMany<string>>(
 export const ifScript = ifPkgSubProp('scripts')
 
 export function getScriptsDir(dirname: string) {
-  return path.join(dirname, 'scripts/')
+  return path.join(dirname, 'scripts') + path.sep
 }
 
 export function availableScriptNames(dirname: string = __dirname) {

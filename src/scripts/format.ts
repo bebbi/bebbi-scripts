@@ -25,7 +25,7 @@ const ignore = useBuiltInIgnore
 
 const write = args.includes('--no-write') ? [] : ['--write']
 
-const relativeArgs = args.map((a) => a.replace(`${process.cwd()}/`, ''))
+const relativeArgs = args.map((a) => a.replace(`${process.cwd()}${path.sep}`, ''))
 
 const filesToApply = parsedArgs._.length
   ? []

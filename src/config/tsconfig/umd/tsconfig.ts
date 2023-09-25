@@ -1,12 +1,12 @@
-/* eslint-disable import/no-import-module-exports */
 import { appDirectory } from '../../../utils'
+import path from 'path'
 
 module.exports = {
-  include: [`${appDirectory}/src/**/*`],
-  extends: `${appDirectory}/tsconfig`,
+  include: [path.join(appDirectory, 'src/**/*')],
+  extends: path.join(appDirectory, 'tsconfig'),
   compilerOptions: {
     module: 'commonjs',
     declaration: false,
-    outDir: `${appDirectory}/dist/umd`,
+    outDir: path.join(appDirectory, 'dist/umd'),
   },
 }

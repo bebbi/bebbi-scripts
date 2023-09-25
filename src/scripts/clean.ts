@@ -1,6 +1,7 @@
 import { rimrafSync } from 'rimraf'
 import yargsParser from 'yargs-parser'
 import { appDirectory, log } from '..'
+import path = require('path')
 
 console.log('Running `bebbi-scripts clean`, Please wait...')
 
@@ -17,8 +18,9 @@ const cleanDirs = parsedArgs._.length
 
 if (cleanDirs.length > 0) {
   cleanDirs.forEach((dir) => {
-    console.log(`Deleting: ${appDirectory}/dist/${dir}`)
-    rimrafSync(`${appDirectory}/dist/${dir}`)
+    const deleteDir = path.join(appDirectory, 'dist', dir)
+    console.log(`Deleting: ${deleteDir}`)
+    rimrafSync(deleteDir)
   })
 } else {
   if (parsedArgs._.length) {
@@ -26,6 +28,7 @@ if (cleanDirs.length > 0) {
     process.exit(1)
   }
 
-  rimrafSync(`${appDirectory}/dist`)
-  log.success(`Deleted: ${appDirectory}/dist`)
+  const deleteDir = path.join(appDirectory, 'dist')
+  rimrafSync(deleteDir)
+  log.success(`Deleted: ${deleteDir}`)
 }
