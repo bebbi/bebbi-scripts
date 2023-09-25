@@ -1,21 +1,26 @@
-0.4.1
+## 0.4.2
+
+- Fix a `yarn test` issue with importing libraries.
+- Use OS independent path calculation across the board.
+
+## 0.4.1
 
 - Fix husky install in a .git repo that is inside a monorepo
 
-0.4.0
+## 0.4.0
 
 - setup becomes init
 
-0.3.2
+## 0.3.2
 
 - Allow selecting the config source
 
-0.3.0
+## 0.3.0
 
 - Change error handling so test output works again
 - configs can also be folders
- 
-0.2.0
+
+## 0.2.0
 
 - Bump typescript version to 5.2.2
 - More functions accessible from outside
@@ -24,6 +29,6 @@
 - eslint-config-react-app
 - fixed tsconfig.json export
 
-  0.1.0
+## 0.1.0
 
 - Hello bebbi-scripts
