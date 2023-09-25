@@ -2,6 +2,7 @@ import jest from 'jest'
 import { hasFile, ifAnyDep } from '../utils'
 
 const ignores = [
+  '/dist',
   '/node_modules/',
   '/__fixtures__/',
   '/fixtures/',
