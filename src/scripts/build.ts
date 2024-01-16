@@ -11,6 +11,7 @@ import {
   pkg,
   resolveBin,
   log,
+  toPOSIX,
 } from '../utils'
 
 console.log('Running `bebbi-scripts build`, Please wait...')
@@ -96,29 +97,29 @@ const packageArgs: Partial<
 
 export const compileToOptions: Record<(typeof buildTypes)[number], string> = {
   cjs: [
-    resolveBin('typescript', { executable: 'tsc' }),
+    toPOSIX(resolveBin('typescript', { executable: 'tsc' })),
     '--baseUrl',
     confAppDir,
     '--project',
-    hereRelative(`../config/${confAppDir}/cjs/tsconfig.json`),
+    toPOSIX(hereRelative(`../config/${confAppDir}/cjs/tsconfig.json`)),
     ...(packageArgs.cjs ?? []),
     ...passThroughArgs,
   ].join(' '),
   esm: [
-    resolveBin('typescript', { executable: 'tsc' }),
+    toPOSIX(resolveBin('typescript', { executable: 'tsc' })),
     '--baseUrl',
     confAppDir,
     '--project',
-    hereRelative(`../config/${confAppDir}/esm/tsconfig.json`),
+    toPOSIX(hereRelative(`../config/${confAppDir}/esm/tsconfig.json`)),
     ...(packageArgs.esm ?? []),
     ...passThroughArgs,
   ].join(' '),
   types: [
-    resolveBin('typescript', { executable: 'tsc' }),
+    toPOSIX(resolveBin('typescript', { executable: 'tsc' })),
     '--baseUrl',
     confAppDir,
     '--project',
-    hereRelative(`../config/${confAppDir}/types/tsconfig.json`),
+    toPOSIX(hereRelative(`../config/${confAppDir}/types/tsconfig.json`)),
     ...(packageArgs.types ?? []),
     ...passThroughArgs,
   ].join(' '),
@@ -133,11 +134,11 @@ export const compileToOptions: Record<(typeof buildTypes)[number], string> = {
    * umd at this time, so I am bypassing this block for now.
    */
   // umd: [
-  //   resolveBin('webpack'),
+  //   toPOSIX(resolveBin('webpack')),
   //   '--baseUrl',
   //   confAppDir,
   //   '--config',
-  //   hereRelative(`../config/${confAppDir}/umd/tsconfig.json`),
+  //   toPOSIX(hereRelative(`../config/${confAppDir}/umd/tsconfig.json`)),
   //   ...passThroughArgs,
   // ].join(' '),
   /*eslint no-warning-comments: "error"*/
