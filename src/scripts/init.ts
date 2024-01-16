@@ -70,7 +70,7 @@ const initYarnConfig = async () => {
 
 function initHusky(): boolean {
   const installScripts: SpawnSyncReturns<Buffer>[] = [
-    spawn.sync(resolveBin('yarn'), ['add', '-D', 'husky'], {
+    spawn.sync(resolveBin('yarn'), ['add', '-D', 'husky', 'lint-staged'], {
       stdio: 'inherit',
     }),
   ]
