@@ -200,7 +200,7 @@ function initTsConfig(): boolean {
   }
 
   if (tsConfig) {
-    if (tsConfig.extends === BEBBI_EXTENDS) {
+    if (tsConfig['extends'] === BEBBI_EXTENDS) {
       return true
     } else {
       console.log(

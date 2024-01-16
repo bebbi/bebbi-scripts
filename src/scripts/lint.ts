@@ -23,7 +23,7 @@ const config = useBuiltinConfig
 const defaultExtensions = 'js,ts,tsx'
 const ext = args.includes('--ext') ? [] : ['--ext', defaultExtensions]
 const extensions: string[] = (
-  (parsedArgs.ext as string) || defaultExtensions
+  (parsedArgs['ext'] as string) || defaultExtensions
 ).split(',')
 
 const useBuiltinIgnore =

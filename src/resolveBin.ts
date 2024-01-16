@@ -21,12 +21,26 @@ export const resolveBin = (
       bin: string | Record<string, string>
     }
     const binPath = typeof bin === 'string' ? bin : bin[executable]
-    const fullPathToBin = path.join(modPkgDir, binPath)
+
+    if (!binPath) {
+      throw new Error('binExecMissing')
+    }
+
+    const fullPathToBin = path.join(modPkgDir, binPath!)
     if (fullPathToBin === pathFromWhich) {
       return executable
     }
     return fullPathToBin.replace(cwd, '.')
   } catch (error: unknown) {
+    if (
+      typeof error === 'object' &&
+      error &&
+      'message' in error &&
+      error.message === 'binExecMissing'
+    ) {
+      throw new Error('bin[executable] did not resolve.')
+    }
+
     if (pathFromWhich) {
       return executable
     }

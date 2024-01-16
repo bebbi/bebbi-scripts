@@ -3,7 +3,7 @@ import { spawnScript, help, log } from './'
 
 const [executor, , script] = process.argv
 
-if (script && script !== '--help' && script !== 'help') {
+if (executor && script && script !== '--help' && script !== 'help') {
   try {
     spawnScript(executor, script)
   } catch (err) {

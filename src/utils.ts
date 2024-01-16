@@ -32,7 +32,7 @@ export const { packageJson: pkg, path: pkgPath = '' } =
   }) ?? {}
 
 export const workSpaceDir = (maxPkgDepth = 2): string | null => {
-  if (pkg?.workspaces) {
+  if (pkg?.['workspaces']) {
     return path.dirname(pkgPath)
   }
   let lastPkgPath = pkgPath
@@ -47,7 +47,7 @@ export const workSpaceDir = (maxPkgDepth = 2): string | null => {
           cwd: tryNextPath,
         }) ?? {}
       lastPkgPath = upPath
-      if (upPackageJson?.workspaces) {
+      if (upPackageJson?.['workspaces']) {
         return path.dirname(upPath)
       }
     }
@@ -58,7 +58,7 @@ export const workSpaceDir = (maxPkgDepth = 2): string | null => {
   return null
 }
 
-export const isWS = () => pkg?.workspaces !== undefined
+export const isWS = () => pkg?.['workspaces'] !== undefined
 
 export const appDirectory = path.dirname(pkgPath)
 

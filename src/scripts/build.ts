@@ -54,7 +54,8 @@ const getPackageBuildProps = (): Partial<
   Record<(typeof buildTypes)[number], OneOrMany<string[]>>
 > => {
   /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
-  const build = typeof pkg?.build === 'string' ? [pkg.build] : pkg?.build ?? []
+  const build =
+    typeof pkg?.['build'] === 'string' ? [pkg['build']] : pkg?.['build'] ?? []
   if (Array.isArray(build)) {
     const res = Object.fromEntries(
       buildTypes.map((b) => {

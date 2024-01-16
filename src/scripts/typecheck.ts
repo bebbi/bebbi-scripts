@@ -14,7 +14,11 @@ const parsedArgs = yargsParser(args)
 //   )
 // }
 
-if (!parsedArgs.project && !parsedArgs.build && !hasFile('tsconfig.json')) {
+if (
+  !parsedArgs['project'] &&
+  !parsedArgs['build'] &&
+  !hasFile('tsconfig.json')
+) {
   log.error(
     'Cannot use the "typecheck" script without --project or --build in a project that does not have a tsconfig.json file.',
   )
@@ -24,7 +28,7 @@ if (!parsedArgs.project && !parsedArgs.build && !hasFile('tsconfig.json')) {
 // if --project is provided, we can't pass --build
 // if --build is provided, we don't need to add it
 // if --no-build is passed, we'll just trust they know what they're doing
-if (!parsedArgs.project && !parsedArgs.build && !parsedArgs.noBuild) {
+if (!parsedArgs['project'] && !parsedArgs['build'] && !parsedArgs['noBuild']) {
   args = ['--build', ...args]
 }
 
