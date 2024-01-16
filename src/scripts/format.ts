@@ -11,7 +11,8 @@ const parsedArgs = yargsParser(args)
 const here = (p: string) => path.join(__dirname, p)
 
 const useBuiltinConfig =
-  !args.includes('--config') && !hasLocalConfig('prettier')
+  !args.includes('--config') &&
+  !hasLocalConfig('prettier', { searchStrategy: 'global' })
 const config: string[] = useBuiltinConfig
   ? ['--config', toRelative(here('../config/prettierrc.js'))]
   : []
