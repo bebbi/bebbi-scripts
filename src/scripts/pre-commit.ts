@@ -1,11 +1,10 @@
 import path from 'path'
 import spawn from 'cross-spawn'
-import { hasPkgProp, hasFile, resolveBin } from '../utils'
+import { hasPkgProp, hasFile, resolveBin, toRelative } from '../utils'
 
 console.log('Running `bebbi-scripts pre-commit`, Please wait...')
 
 const here = (p: string) => path.join(__dirname, p)
-const hereRelative = (p: string) => here(p).replace(process.cwd(), '.')
 
 const args = process.argv.slice(2).filter((f) => f !== '--no-banner')
 
@@ -16,7 +15,7 @@ const useBuiltInConfig =
   !hasPkgProp('lint-staged')
 
 const config = useBuiltInConfig
-  ? ['--config', hereRelative('../config/lintstagedrc.js')]
+  ? ['--config', toRelative(here('../config/lintstagedrc.js'))]
   : []
 
 const go = () => {

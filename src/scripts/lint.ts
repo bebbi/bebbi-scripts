@@ -1,13 +1,12 @@
 import path from 'path'
 import spawn from 'cross-spawn'
 import yargsParser from 'yargs-parser'
-import { hasPkgProp, resolveBin, hasFile, fromRoot } from '../utils'
+import { hasPkgProp, resolveBin, hasFile, fromRoot, toRelative } from '../utils'
 
 console.log('Running `bebbi-scripts lint`, Please wait...')
 
 let args = process.argv.slice(2).filter((f) => f !== '--no-banner')
 const here = (p: string) => path.join(__dirname, p)
-const hereRelative = (p: string) => here(p).replace(process.cwd(), '.')
 const parsedArgs = yargsParser(args)
 
 // Using react-app-eslint-config, no need to pass a config.
@@ -18,7 +17,7 @@ const useBuiltinConfig = false
 // !hasPkgProp('eslintConfig')
 
 const config = useBuiltinConfig
-  ? ['--config', hereRelative('../config/eslintrc.js')]
+  ? ['--config', toRelative(here('../config/eslintrc.js'))]
   : []
 
 const defaultExtensions = 'js,ts,tsx'
@@ -33,7 +32,7 @@ const useBuiltinIgnore =
   !hasPkgProp('eslintIgnore')
 
 const ignore = useBuiltinIgnore
-  ? ['--ignore-path', hereRelative('../config/eslintignore')]
+  ? ['--ignore-path', toRelative(here('../config/eslintignore'))]
   : []
 
 const cache = args.includes('--no-cache')

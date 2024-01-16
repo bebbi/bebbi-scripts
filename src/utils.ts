@@ -21,6 +21,8 @@ import { bebbiArt, signOff } from './bebbiArt'
 import { resolveBin } from './resolveBin'
 export { resolveBin } from './resolveBin'
 
+export const toRelative = (p: string) => p.replace(process.cwd(), '.')
+
 const arrify = <T>(props: OneOrMany<T>): T[] =>
   Array.isArray(props) ? props : [props]
 
@@ -68,7 +70,7 @@ export const isBebbiScripts = () => pkg?.name === 'bebbi-scripts'
 
 export const resolveBebbiScripts = () => {
   if (isBebbiScripts() || appDirectory.includes(path.join(__dirname, '..'))) {
-    return require.resolve('.').replace(process.cwd(), '.')
+    return toRelative(require.resolve('.'))
   }
   return resolveBin('bebbi-scripts')
 }

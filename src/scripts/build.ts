@@ -12,6 +12,7 @@ import {
   resolveBin,
   log,
   toPOSIX,
+  toRelative,
 } from '../utils'
 
 console.log('Running `bebbi-scripts build`, Please wait...')
@@ -20,22 +21,25 @@ const args = process.argv.slice(2).filter((f) => f !== '--no-banner')
 const parsedArgs = yargsParser(args)
 
 const here = (p: string) => path.join(__dirname, p)
-const hereRelative = (p: string) => here(p).replace(process.cwd(), '.')
 
 // this creates a new directory from a hash of the path being built to store temp config files.
 // Doing it this way prevents race-conditions if two packages are being build concurrently.
 const confAppDir = crypto.createHash('md5').update(appDirectory).digest('hex')
 // this copies the tsconfig directory recursively into the path specific build config
 fs.cpSync(
-  hereRelative('../config/tsconfig'),
-  hereRelative(`../config/${confAppDir}`),
+  toRelative(here('../config/tsconfig')),
+  toRelative(here(`../config/${confAppDir}`)),
   { recursive: true },
 )
 // this converts the tsconfig.js files copied in the previous step over to tsconfig.json files
 const makeTsConfig =
   /* eslint-disable @typescript-eslint/no-var-requires */
-  (require(path.join('../config', confAppDir)) as Record<'config', () => Promise<void>>)
-    .config as () => Promise<void>
+  (
+    require(path.join('../config', confAppDir)) as Record<
+      'config',
+      () => Promise<void>
+    >
+  ).config as () => Promise<void>
 /* eslint-enable @typescript-eslint/no-var-requires */
 
 const useBuiltinConfig = !args.includes('--project')
@@ -101,7 +105,7 @@ export const compileToOptions: Record<(typeof buildTypes)[number], string> = {
     '--baseUrl',
     confAppDir,
     '--project',
-    toPOSIX(hereRelative(`../config/${confAppDir}/cjs/tsconfig.json`)),
+    toPOSIX(toRelative(here(`../config/${confAppDir}/cjs/tsconfig.json`))),
     ...(packageArgs.cjs ?? []),
     ...passThroughArgs,
   ].join(' '),
@@ -110,7 +114,7 @@ export const compileToOptions: Record<(typeof buildTypes)[number], string> = {
     '--baseUrl',
     confAppDir,
     '--project',
-    toPOSIX(hereRelative(`../config/${confAppDir}/esm/tsconfig.json`)),
+    toPOSIX(toRelative(here(`../config/${confAppDir}/esm/tsconfig.json`))),
     ...(packageArgs.esm ?? []),
     ...passThroughArgs,
   ].join(' '),
@@ -119,7 +123,7 @@ export const compileToOptions: Record<(typeof buildTypes)[number], string> = {
     '--baseUrl',
     confAppDir,
     '--project',
-    toPOSIX(hereRelative(`../config/${confAppDir}/types/tsconfig.json`)),
+    toPOSIX(toRelative(here(`../config/${confAppDir}/types/tsconfig.json`))),
     ...(packageArgs.types ?? []),
     ...passThroughArgs,
   ].join(' '),
@@ -138,7 +142,7 @@ export const compileToOptions: Record<(typeof buildTypes)[number], string> = {
   //   '--baseUrl',
   //   confAppDir,
   //   '--config',
-  //   toPOSIX(hereRelative(`../config/${confAppDir}/umd/tsconfig.json`)),
+  //   toPOSIX(toRelative(here(`../config/${confAppDir}/umd/tsconfig.json`))),
   //   ...passThroughArgs,
   // ].join(' '),
   /*eslint no-warning-comments: "error"*/
