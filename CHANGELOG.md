@@ -1,3 +1,12 @@
+## 0.4.3
+
+- This hopefully fixes broken paths on windows.
+  Tested using Powershell and scoop.sh
+- Add lint-staged to init script
+- make code compatible for (possibly future) `noUncheckedIndexedAccess`
+  and `noPropertyAccessFromIndexSignature`
+- Bumps non-ESM deps
+
 ## 0.4.2
 
 - Fix a `yarn test` issue with importing libraries.
