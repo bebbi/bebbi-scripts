@@ -29,6 +29,8 @@ Inside your new module folder, run
 
 2. `yarn dlx bebbi-scripts init`
 
+The script assumes that your input is `src`, outDir is `dist`
+
 ### Overriding Config
 
 #### tsconfig.json
@@ -36,7 +38,7 @@ Inside your new module folder, run
 ```json
 {
   "extends": "bebbi-scripts/tsconfig.json",
-  "other": "..."
+  "others_are_optional": "..."
 }
 ```
 
@@ -54,9 +56,9 @@ Example `package.json` section:
 }
 ```
 
-#### Other
+#### Extending bebbi-scripts
 
-This script adds no babel config. Check out `gig-utils` for a tool that extends `bebbi-scripts` with a config for babel and storybook.
+Check out `gig-utils` for a module that extends `bebbi-scripts` with a config for babel and storybook.
 
 If you have a `typecheck` script (normally set to `bebbi-scripts typecheck`)
 that will be run as part of the `validate` script (which is run as part of the `pre-commit` script as well).
