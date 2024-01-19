@@ -172,10 +172,9 @@ async function initScriptsConfig(): Promise<boolean> {
     process.exit(1)
   }
 
-  const success1 = initHusky()
-  const success2 = addPkgJsonScripts()
+  const success = addPkgJsonScripts()
 
-  return success1 && success2
+  return success
 }
 
 function initTsConfig(): boolean {
@@ -233,6 +232,10 @@ async function run() {
   if (!(await initYarnConfig())) {
     log.error('The yarn config file failed to initialize.')
     process.exit(1)
+  }
+
+  if (!initHusky()) {
+    log.error('Husky installation failed.')
   }
 
   if (!(await initScriptsConfig())) {
