@@ -1,5 +1,7 @@
-## main
+## 0.4.4
 
+- adds other package.json script keys
+- re-arranges the logs for better visibility
 - Windows Powershell/scoop.sh: Building itself works now, but not building other libs,
   perhaps fails at `spawn.sync(resolveBin('concurrently'), ...` 
 
