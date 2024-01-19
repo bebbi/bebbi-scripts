@@ -15,11 +15,12 @@ Like kcd-scripts, but
 ✅ written in TS<br />
 ✅ tsc builds<br />
 ✅ outputs `esm`, `cjs`, `types`<br />
-✅ yarn 3<br />
-✅ yarn monorepo<br />
-✅ run your own scripts<br />
+✅ yarn berry<br />
+✅ yarn workspace<br />
+✅ customize<br />
 🚫 yarn pnp<br />
-🚫 npm
+🚫 npm<br />
+⚠️ Windows: not working on Powershell/scoop.sh, your support appreciated<br />
 
 ## How
 
@@ -56,11 +57,13 @@ Example `package.json` section:
 }
 ```
 
-#### Extending bebbi-scripts
+#### Customizing bebbi-scripts
+
+To fully customize bebbi-scripts, make it a dependency of your own script.
 
 Check out `gig-utils` for a module that extends `bebbi-scripts` with a config for babel and storybook.
 
-If you have a `typecheck` script (normally set to `bebbi-scripts typecheck`)
+Note that if you have a `typecheck` script (normally set to `bebbi-scripts typecheck`)
 that will be run as part of the `validate` script (which is run as part of the `pre-commit` script as well).
 
 ## Inspiration

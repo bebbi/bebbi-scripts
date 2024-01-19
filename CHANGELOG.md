@@ -1,3 +1,8 @@
+## main
+
+- Windows Powershell/scoop.sh: Building itself works now, but not building other libs,
+  perhaps fails at `spawn.sync(resolveBin('concurrently'), ...` 
+
 ## 0.4.3
 
 - This hopefully fixes broken paths on windows.
