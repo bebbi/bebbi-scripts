@@ -5,14 +5,29 @@ import { fromRoot, isBebbiScripts, pkg, resolveBin, log } from '..'
 
 const BEBBI_EXTENDS = 'bebbi-scripts/tsconfig.json'
 
-const SCRIPTS = {
-  clean: 'bebbi-scripts clean',
-  build: 'bebbi-scripts build',
-  watch: 'bebbi-scripts cjs --watch',
-  test: 'bebbi-scripts test',
-  format: 'bebbi-scripts format',
-  lint: 'bebbi-scripts lint',
-  validate: 'bebbi-scripts validate',
+const PACKAGE_JSON = {
+  scripts: {
+    clean: 'bebbi-scripts clean',
+    build: 'bebbi-scripts build',
+    watch: 'bebbi-scripts cjs --watch',
+    test: 'bebbi-scripts test',
+    format: 'bebbi-scripts format',
+    lint: 'bebbi-scripts lint',
+    validate: 'bebbi-scripts validate',
+  },
+  main: 'dist/cjs/index.js',
+  module: 'dist/esm/index.js',
+  types: 'dist/types/index.d.ts',
+  exports: {
+    '.': {
+      import: './dist/esm/index.js',
+      require: './dist/cjs/index.js',
+      default: './dist/cjs/index.js',
+      development: './src/index.ts',
+      production: './dist/cjs/index.js',
+    },
+  },
+  files: ['dist'],
 }
 
 console.log('Running `bebbi-scripts init`, Please wait...')
@@ -109,7 +124,7 @@ function initHusky(): boolean {
   return true
 }
 
-function addPkgJsonScripts() {
+function addPkgJsonKeys() {
   const data = fs.readFileSync('package.json', { encoding: 'utf-8' })
 
   let pkgJSON: typeof pkg
@@ -127,9 +142,11 @@ function addPkgJsonScripts() {
     process.exit(1)
   }
 
+  const { scripts, files, ...rest } = PACKAGE_JSON
+
   pkgJSON.scripts = pkgJSON.scripts ?? {}
 
-  Object.entries(SCRIPTS).forEach(([key, value]) => {
+  Object.entries(scripts).forEach(([key, value]) => {
     // TODO: TS assert shouldn't be needed
     const val = pkgJSON!.scripts![key]
     if (val) {
@@ -138,6 +155,18 @@ function addPkgJsonScripts() {
     }
     log.success(`Adding script key ${key}`)
     pkgJSON!.scripts![key] = value
+  })
+
+  pkgJSON.files = pkgJSON.files ?? []
+
+  log.success(`Adding files to files key`)
+  pkgJSON.files.push(
+    ...files.filter((r) => (pkgJSON!.files as string[]).indexOf(r) === -1),
+  )
+
+  Object.entries(rest).forEach(([key, value]) => {
+    log.success(`Adding key ${key}`)
+    pkgJSON![key] = value
   })
 
   try {
@@ -172,7 +201,7 @@ async function initScriptsConfig(): Promise<boolean> {
     process.exit(1)
   }
 
-  const success = addPkgJsonScripts()
+  const success = addPkgJsonKeys()
 
   return success
 }
