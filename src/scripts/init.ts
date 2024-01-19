@@ -172,8 +172,8 @@ async function initScriptsConfig(): Promise<boolean> {
     process.exit(1)
   }
 
-  const success1 = addPkgJsonScripts()
-  const success2 = initHusky()
+  const success1 = initHusky()
+  const success2 = addPkgJsonScripts()
 
   return success1 && success2
 }
