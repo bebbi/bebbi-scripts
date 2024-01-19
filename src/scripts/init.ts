@@ -219,6 +219,8 @@ function initTsConfig(): boolean {
         `${JSON.stringify(tsConfig, undefined, 2)}\n`,
         { encoding: 'utf-8' },
       )
+
+      log.success('Wrote tsconfig.json')
     } catch (err) {
       log.error('Writing tsconfig.json failed')
       process.exit(1)
@@ -247,11 +249,11 @@ async function run() {
     log.warn('`tsconfig.json` unchanged.')
   }
 
-  console.log(
-    hasGit
-      ? log.success('husky git hooks installed')
-      : log.warn('Missing .git: skipping husky git hooks'),
-  )
+  if (hasGit) {
+    log.success('husky git hooks installed')
+  } else {
+    log.warn('Missing .git: skipping husky git hooks')
+  }
 
   process.exit(0)
 }
