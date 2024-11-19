@@ -179,6 +179,38 @@ const go = () => {
       getConcurrentlyArgs(buildScripts),
       { stdio: 'inherit' },
     )
+
+    // Run post-build step to rename CJS files only if package is type: module
+    if (result.status === 0 && buildScripts.hasOwnProperty('cjs') && pkg?.type === 'module') {
+      const cjsDir = path.join(appDirectory, 'dist', 'cjs')
+      if (fs.existsSync(cjsDir)) {
+        const renameFilesInDir = (dir: string) => {
+          const dirEntries = fs.readdirSync(dir, { withFileTypes: true })
+          for (const entry of dirEntries) {
+            const fullPath = path.join(dir, entry.name)
+            if (entry.isDirectory()) {
+              renameFilesInDir(fullPath)
+            } else if (entry.isFile() && entry.name.endsWith('.js')) {
+              const newPath = fullPath.replace(/\.js$/, '.cjs')
+              // Update require paths in the file
+              let content = fs.readFileSync(fullPath, 'utf8')
+              content = content.replace(/require\(['"](\.[^'"]+)['"]\)/g, (match, p1) => {
+                // If the import path doesn't end in .js or .cjs, assume it's a directory import
+                if (!p1.endsWith('.js') && !p1.endsWith('.cjs')) {
+                  return `require('${p1}/index.cjs')`
+                }
+                // Otherwise replace .js with .cjs
+                return `require('${p1.replace(/\.js$/, '.cjs')}')`
+              })
+              fs.writeFileSync(newPath, content)
+              fs.unlinkSync(fullPath)
+            }
+          }
+        }
+        renameFilesInDir(cjsDir)
+      }
+    }
+
     return result.status ?? undefined
   }
   const result = spawn.sync(
