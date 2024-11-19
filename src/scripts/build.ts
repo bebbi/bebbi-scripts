@@ -211,6 +211,40 @@ const go = () => {
       }
     }
 
+    // Run post-build step for ESM files to ensure proper ESM-compatible imports.
+    // This solves the `ERR_UNSUPPORTED_DIR_IMPORT`
+    if (result.status === 0 && buildScripts.hasOwnProperty('esm')) {
+      const esmDir = path.join(appDirectory, 'dist', 'esm')
+      if (fs.existsSync(esmDir)) {
+        const updateImportsInDir = (dir: string) => {
+          const dirEntries = fs.readdirSync(dir, { withFileTypes: true })
+          for (const entry of dirEntries) {
+            const fullPath = path.join(dir, entry.name)
+            if (entry.isDirectory()) {
+              updateImportsInDir(fullPath)
+            } else if (entry.isFile() && entry.name.endsWith('.js')) {
+              // Update import paths in the file
+              let content = fs.readFileSync(fullPath, 'utf8')
+              content = content.replace(/from ['"](\.[^'"]+)['"]/g, (match, p1) => {
+                // If the import path doesn't end in .js, assume it's either a directory import or needs .js
+                if (!p1.endsWith('.js')) {
+                  // If it's a directory import (no file extension), append /index.js
+                  if (!path.extname(p1)) {
+                    return `from '${p1}/index.js'`
+                  }
+                  // Otherwise just append .js
+                  return `from '${p1}.js'`
+                }
+                return match
+              })
+              fs.writeFileSync(fullPath, content)
+            }
+          }
+        }
+        updateImportsInDir(esmDir)
+      }
+    }
+
     return result.status ?? undefined
   }
   const result = spawn.sync(
