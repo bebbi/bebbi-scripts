@@ -15,6 +15,7 @@ Like kcd-scripts, but
 ✅ written in TS<br />
 ✅ tsc builds<br />
 ✅ outputs `esm`, `cjs`, `types`<br />
+✅ handles `ERR_UNSUPPORTED_DIR_IMPORT` issues<br />
 ✅ yarn berry<br />
 ✅ yarn workspace<br />
 ✅ customize<br />
