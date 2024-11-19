@@ -169,24 +169,29 @@ const go = () => {
     Object.entries(compileToOptions).filter(([opt]) => compileTo.includes(opt)),
   )
 
-  function findSourceFile(importPath: string, currentFile: string): boolean {
-    const outputDir = path.dirname(currentFile)
-    const resolvedPath = path.join(outputDir, importPath)
-    const ext = path.extname(currentFile) // Will be .js or .cjs
+  function findSourceFile(
+    p1: string,
+    fullPath: string,
+  ): 'file' | 'directory' | false {
+    // Get the directory containing the importing file
+    const dir = path.dirname(fullPath)
+    // Resolve the imported path relative to the importing file
+    const resolvedPath = path.resolve(dir, p1)
 
-    // Check if it exists as a direct file
-    if (fs.existsSync(resolvedPath + ext)) {
-      return true
+    try {
+      const stats = fs.statSync(resolvedPath)
+      if (stats.isDirectory()) {
+        return 'directory'
+      }
+      if (stats.isFile()) {
+        return 'file'
+      }
+    } catch (e) {
+      // Path doesn't exist
     }
-
-    // Check if it exists as an index file in a directory
-    if (fs.existsSync(path.join(resolvedPath, 'index' + ext))) {
-      return false // Return false to indicate it's a directory
-    }
-
     // If neither exists, default to treating it as a file
     // This maintains compatibility with the TypeScript compiler's output
-    return true
+    return false
   }
 
   function transformImports(
@@ -199,11 +204,11 @@ const go = () => {
       // Handle relative imports (starting with ./ or ../)
       if (p1.match(/^\.\.?\//) !== null) {
         if (!p1.endsWith('.js') && !p1.endsWith('.cjs')) {
-          // Check if it's a source file or directory
-          if (findSourceFile(p1, fullPath)) {
+          const sourceType = findSourceFile(p1, fullPath)
+          if (sourceType === 'file' || sourceType === false) {
             return `${p1}.${targetExt}`
           }
-          // If not a source file, assume directory import
+          // It's a directory
           return `${p1}/index.${targetExt}`
         }
         return p1.endsWith('.js') ? p1.replace(/\.js$/, `.${targetExt}`) : p1
