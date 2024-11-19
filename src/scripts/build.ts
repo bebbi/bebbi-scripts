@@ -169,29 +169,63 @@ const go = () => {
     Object.entries(compileToOptions).filter(([opt]) => compileTo.includes(opt)),
   )
 
-  // Helper function to check if a source file exists with any supported extension.
-  // This helps us distinguish between resolving imports referenced as files vs as directories.
-  const findSourceFile = (
-    importPath: string,
-    currentFilePath: string,
-  ): boolean => {
-    const srcDir = path.join(appDirectory, 'src')
-    // Get the directory of the current file relative to src
-    const currentFileDir = path.dirname(path.relative(srcDir, currentFilePath))
+  function findSourceFile(importPath: string, currentFile: string): boolean {
+    const outputDir = path.dirname(currentFile)
+    const resolvedPath = path.join(outputDir, importPath)
+    const ext = path.extname(currentFile) // Will be .js or .cjs
 
-    const normalizedPath = importPath.startsWith('./')
-      ? importPath.slice(2)
-      : importPath.startsWith('../')
-        ? path.join('..', importPath.slice(3))
-        : importPath
+    // Check if it exists as a direct file
+    if (fs.existsSync(resolvedPath + ext)) {
+      return true
+    }
 
-    // Resolve the import path relative to the current file's location
-    const resolvedPath = path.join(currentFileDir, normalizedPath)
-    const extensions = ['.ts', '.tsx', '.js', '.jsx']
+    // Check if it exists as an index file in a directory
+    if (fs.existsSync(path.join(resolvedPath, 'index' + ext))) {
+      return false // Return false to indicate it's a directory
+    }
 
-    return extensions.some((ext) =>
-      fs.existsSync(path.join(srcDir, `${resolvedPath}${ext}`)),
+    // If neither exists, default to treating it as a file
+    // This maintains compatibility with the TypeScript compiler's output
+    return true
+  }
+
+  function transformImports(content: string, fullPath: string, targetExt: 'js' | 'cjs'): string {
+    // Helper to process the import path consistently for both ESM and CJS
+    const processImportPath = (p1: string) => {
+      // Handle relative imports (starting with ./ or ../)
+      if (p1.match(/^\.\.?\//) !== null) {
+        if (!p1.endsWith('.js') && !p1.endsWith('.cjs')) {
+          // Check if it's a source file or directory
+          if (findSourceFile(p1, fullPath)) {
+            return `${p1}.${targetExt}`
+          }
+          // If not a source file, assume directory import
+          return `${p1}/index.${targetExt}`
+        }
+        return p1.endsWith('.js') ? p1.replace(/\.js$/, `.${targetExt}`) : p1
+      }
+      // Handle package submodule imports
+      if (p1.includes('/') && !p1.match(/^[@/.]/)) {
+        if (!p1.match(/\.[a-zA-Z]+$/)) {
+          return `${p1}.${targetExt}`
+        }
+      }
+      return p1
+    }
+
+    // Handle ESM imports
+    content = content.replace(
+      /from ['"]([^'"]+)['"]/g,
+      (match, p1) => `from '${processImportPath(p1)}'`
     )
+
+    // Handle CJS requires
+    content = content.replace(
+      /require\(['"]([^'"]+)['"]\)/g,
+      (match, p1) => `require('${processImportPath(p1)}')`
+    )
+
+    return content
   }
 
   if (useBuiltinConfig) {
@@ -222,24 +256,8 @@ const go = () => {
               renameFilesInDir(fullPath)
             } else if (entry.isFile() && entry.name.endsWith('.js')) {
               const newPath = fullPath.replace(/\.js$/, '.cjs')
-              // Update require paths in the file
               let content = fs.readFileSync(fullPath, 'utf8')
-              content = content.replace(
-                /require\(['"](\.[^'"]+)['"]\)/g,
-                (match, p1) => {
-                  // If the import path doesn't end in .js or .cjs
-                  if (!p1.endsWith('.js') && !p1.endsWith('.cjs')) {
-                    // Check if it's a source file or directory
-                    if (findSourceFile(p1, fullPath.replace(/\.cjs$/, ''))) {
-                      return `require('${p1}.cjs')`
-                    }
-                    // If not a source file, assume directory import
-                    return `require('${p1}/index.cjs')`
-                  }
-                  // Otherwise replace .js with .cjs
-                  return `require('${p1.replace(/\.js$/, '.cjs')}')`
-                },
-              )
+              content = transformImports(content, fullPath, 'cjs')
               fs.writeFileSync(newPath, content)
               fs.unlinkSync(fullPath)
             }
@@ -250,7 +268,6 @@ const go = () => {
     }
 
     // Run post-build step for ESM files to ensure proper ESM-compatible imports.
-    // This solves the `ERR_UNSUPPORTED_DIR_IMPORT`
     if (result.status === 0 && buildScripts.hasOwnProperty('esm')) {
       const esmDir = path.join(appDirectory, 'dist', 'esm')
       if (fs.existsSync(esmDir)) {
@@ -261,38 +278,8 @@ const go = () => {
             if (entry.isDirectory()) {
               updateImportsInDir(fullPath)
             } else if (entry.isFile() && entry.name.endsWith('.js')) {
-              // Update import paths in the file
               let content = fs.readFileSync(fullPath, 'utf8')
-              content = content.replace(
-                /from ['"]([^'"]+)['"]/g,
-                (match, p1) => {
-                  // Handle relative imports (starting with ./ or ../)
-                  if (p1.match(/^\.\.?\//) !== null) {
-                    if (!p1.endsWith('.js')) {
-                      // Check if it's a source file or directory
-                      if (findSourceFile(p1, fullPath)) {
-                        return `from '${p1}.js'`
-                      }
-                      // If not a source file, assume directory import
-                      return `from '${p1}/index.js'`
-                    }
-                    return match
-                  }
-
-                  // Handle package submodule imports
-                  // Must match pattern: package/submodule, but not:
-                  // - @scoped/package (scoped packages)
-                  // - /root/paths (absolute paths)
-                  // - ./relative or ../relative (relative paths)
-                  if (p1.includes('/') && !p1.match(/^[@/.]/)) {
-                    // Don't add .js if it already has an extension
-                    if (!p1.match(/\.[a-zA-Z]+$/)) {
-                      return `from '${p1}.js'`
-                    }
-                  }
-                  return match
-                },
-              )
+              content = transformImports(content, fullPath, 'js')
               fs.writeFileSync(fullPath, content)
             }
           }
