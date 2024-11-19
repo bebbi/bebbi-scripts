@@ -55,7 +55,7 @@ const getPackageBuildProps = (): Partial<
 > => {
   /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
   const build =
-    typeof pkg?.['build'] === 'string' ? [pkg['build']] : (pkg?.['build'] ?? [])
+    typeof pkg?.['build'] === 'string' ? [pkg['build']] : pkg?.['build'] ?? []
   if (Array.isArray(build)) {
     const res = Object.fromEntries(
       buildTypes.map((b) => {
@@ -189,7 +189,11 @@ const go = () => {
     return true
   }
 
-  function transformImports(content: string, fullPath: string, targetExt: 'js' | 'cjs'): string {
+  function transformImports(
+    content: string,
+    fullPath: string,
+    targetExt: 'js' | 'cjs',
+  ): string {
     // Helper to process the import path consistently for both ESM and CJS
     const processImportPath = (p1: string) => {
       // Handle relative imports (starting with ./ or ../)
@@ -204,9 +208,11 @@ const go = () => {
         }
         return p1.endsWith('.js') ? p1.replace(/\.js$/, `.${targetExt}`) : p1
       }
-      // Handle package submodule imports - don't add extensions
+      // Handle package submodule imports - don't add extensions unless in esm mode
       if (p1.includes('/') && !p1.match(/^[@/.]/)) {
-        return p1
+        if (!p1.match(/\.[a-zA-Z]+$/)) {
+          return `${p1}${targetExt === 'cjs' ? '' : '.js'}`
+        }
       }
       return p1
     }
@@ -214,13 +220,13 @@ const go = () => {
     // Handle ESM imports
     content = content.replace(
       /from ['"]([^'"]+)['"]/g,
-      (match, p1) => `from '${processImportPath(p1)}'`
+      (match, p1) => `from '${processImportPath(p1)}'`,
     )
 
     // Handle CJS requires
     content = content.replace(
       /require\(['"]([^'"]+)['"]\)/g,
-      (match, p1) => `require('${processImportPath(p1)}')`
+      (match, p1) => `require('${processImportPath(p1)}')`,
     )
 
     return content
