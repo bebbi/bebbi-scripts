@@ -55,7 +55,7 @@ const getPackageBuildProps = (): Partial<
 > => {
   /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
   const build =
-    typeof pkg?.['build'] === 'string' ? [pkg['build']] : pkg?.['build'] ?? []
+    typeof pkg?.['build'] === 'string' ? [pkg['build']] : (pkg?.['build'] ?? [])
   if (Array.isArray(build)) {
     const res = Object.fromEntries(
       buildTypes.map((b) => {
@@ -168,6 +168,32 @@ const go = () => {
   const buildScripts: Record<string, string> = Object.fromEntries(
     Object.entries(compileToOptions).filter(([opt]) => compileTo.includes(opt)),
   )
+
+  // Helper function to check if a source file exists with any supported extension.
+  // This helps us distinguish between resolving imports referenced as files vs as directories.
+  const findSourceFile = (
+    importPath: string,
+    currentFilePath: string,
+  ): boolean => {
+    const srcDir = path.join(appDirectory, 'src')
+    // Get the directory of the current file relative to src
+    const currentFileDir = path.dirname(path.relative(srcDir, currentFilePath))
+
+    const normalizedPath = importPath.startsWith('./')
+      ? importPath.slice(2)
+      : importPath.startsWith('../')
+        ? path.join('..', importPath.slice(3))
+        : importPath
+
+    // Resolve the import path relative to the current file's location
+    const resolvedPath = path.join(currentFileDir, normalizedPath)
+    const extensions = ['.ts', '.tsx', '.js', '.jsx']
+
+    return extensions.some((ext) =>
+      fs.existsSync(path.join(srcDir, `${resolvedPath}${ext}`)),
+    )
+  }
+
   if (useBuiltinConfig) {
     if (Object.keys(buildScripts).length > 1 && passThroughArgs.length > 1) {
       log.warn(
@@ -181,7 +207,11 @@ const go = () => {
     )
 
     // Run post-build step to rename CJS files only if package is type: module
-    if (result.status === 0 && buildScripts.hasOwnProperty('cjs') && pkg?.type === 'module') {
+    if (
+      result.status === 0 &&
+      buildScripts.hasOwnProperty('cjs') &&
+      pkg?.type === 'module'
+    ) {
       const cjsDir = path.join(appDirectory, 'dist', 'cjs')
       if (fs.existsSync(cjsDir)) {
         const renameFilesInDir = (dir: string) => {
@@ -194,14 +224,22 @@ const go = () => {
               const newPath = fullPath.replace(/\.js$/, '.cjs')
               // Update require paths in the file
               let content = fs.readFileSync(fullPath, 'utf8')
-              content = content.replace(/require\(['"](\.[^'"]+)['"]\)/g, (match, p1) => {
-                // If the import path doesn't end in .js or .cjs, assume it's a directory import
-                if (!p1.endsWith('.js') && !p1.endsWith('.cjs')) {
-                  return `require('${p1}/index.cjs')`
-                }
-                // Otherwise replace .js with .cjs
-                return `require('${p1.replace(/\.js$/, '.cjs')}')`
-              })
+              content = content.replace(
+                /require\(['"](\.[^'"]+)['"]\)/g,
+                (match, p1) => {
+                  // If the import path doesn't end in .js or .cjs
+                  if (!p1.endsWith('.js') && !p1.endsWith('.cjs')) {
+                    // Check if it's a source file or directory
+                    if (findSourceFile(p1, fullPath.replace(/\.cjs$/, ''))) {
+                      return `require('${p1}.cjs')`
+                    }
+                    // If not a source file, assume directory import
+                    return `require('${p1}/index.cjs')`
+                  }
+                  // Otherwise replace .js with .cjs
+                  return `require('${p1.replace(/\.js$/, '.cjs')}')`
+                },
+              )
               fs.writeFileSync(newPath, content)
               fs.unlinkSync(fullPath)
             }
@@ -225,18 +263,21 @@ const go = () => {
             } else if (entry.isFile() && entry.name.endsWith('.js')) {
               // Update import paths in the file
               let content = fs.readFileSync(fullPath, 'utf8')
-              content = content.replace(/from ['"](\.[^'"]+)['"]/g, (match, p1) => {
-                // If the import path doesn't end in .js, assume it's either a directory import or needs .js
-                if (!p1.endsWith('.js')) {
-                  // If it's a directory import (no file extension), append /index.js
-                  if (!path.extname(p1)) {
+              content = content.replace(
+                /from ['"](\.[^'"]+)['"]/g,
+                (match, p1) => {
+                  // If the import path doesn't end in .js
+                  if (!p1.endsWith('.js')) {
+                    // Check if it's a source file or directory
+                    if (findSourceFile(p1, fullPath)) {
+                      return `from '${p1}.js'`
+                    }
+                    // If not a source file, assume directory import
                     return `from '${p1}/index.js'`
                   }
-                  // Otherwise just append .js
-                  return `from '${p1}.js'`
-                }
-                return match
-              })
+                  return match
+                },
+              )
               fs.writeFileSync(fullPath, content)
             }
           }
