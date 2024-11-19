@@ -204,11 +204,9 @@ const go = () => {
         }
         return p1.endsWith('.js') ? p1.replace(/\.js$/, `.${targetExt}`) : p1
       }
-      // Handle package submodule imports
+      // Handle package submodule imports - don't add extensions
       if (p1.includes('/') && !p1.match(/^[@/.]/)) {
-        if (!p1.match(/\.[a-zA-Z]+$/)) {
-          return `${p1}.${targetExt}`
-        }
+        return p1
       }
       return p1
     }
