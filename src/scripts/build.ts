@@ -264,16 +264,31 @@ const go = () => {
               // Update import paths in the file
               let content = fs.readFileSync(fullPath, 'utf8')
               content = content.replace(
-                /from ['"](\.[^'"]+)['"]/g,
+                /from ['"]([^'"]+)['"]/g,
                 (match, p1) => {
-                  // If the import path doesn't end in .js
-                  if (!p1.endsWith('.js')) {
-                    // Check if it's a source file or directory
-                    if (findSourceFile(p1, fullPath)) {
+                  // Handle relative imports (starting with ./ or ../)
+                  if (p1.match(/^\.\.?\//) !== null) {
+                    if (!p1.endsWith('.js')) {
+                      // Check if it's a source file or directory
+                      if (findSourceFile(p1, fullPath)) {
+                        return `from '${p1}.js'`
+                      }
+                      // If not a source file, assume directory import
+                      return `from '${p1}/index.js'`
+                    }
+                    return match
+                  }
+
+                  // Handle package submodule imports
+                  // Must match pattern: package/submodule, but not:
+                  // - @scoped/package (scoped packages)
+                  // - /root/paths (absolute paths)
+                  // - ./relative or ../relative (relative paths)
+                  if (p1.includes('/') && !p1.match(/^[@/.]/)) {
+                    // Don't add .js if it already has an extension
+                    if (!p1.match(/\.[a-zA-Z]+$/)) {
                       return `from '${p1}.js'`
                     }
-                    // If not a source file, assume directory import
-                    return `from '${p1}/index.js'`
                   }
                   return match
                 },
