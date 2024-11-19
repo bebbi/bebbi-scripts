@@ -40,7 +40,7 @@ const makeTsConfig =
       () => Promise<void>
     >
   ).config as () => Promise<void>
-/* eslint-enable @typescript-eslint/no-var-requires */
+/* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
 
 const useBuiltinConfig = !args.includes('--project')
 
