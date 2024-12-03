@@ -14,10 +14,7 @@
   "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/cjs/index.js",
-      "development": "./src/index.ts",
-      "production": "./dist/cjs/index.js",
-      "default": "./dist/cjs/index.js"
+      "require": "./dist/cjs/index.js"
     },
     "./tsconfig.json": "./tsconfig.json",
     "./tsconfig": "./tsconfig.json"
