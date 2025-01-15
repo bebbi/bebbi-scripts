@@ -14,6 +14,7 @@ import {
   toPOSIX,
   toRelative,
 } from '../utils'
+import { cleanDistFolder } from '../cleanDistFolder'
 
 console.log('Running `bebbi-scripts build`, Please wait...')
 
@@ -299,6 +300,8 @@ const go = () => {
   )
   return result.status ?? 0
 }
+
+cleanDistFolder()
 
 makeTsConfig()
   .then(() => process.exit(go()))
