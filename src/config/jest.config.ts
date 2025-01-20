@@ -30,7 +30,7 @@ export const jestConfig: jest.Config = {
   coveragePathIgnorePatterns: [...ignores, 'src/(umd|cjs|esm)-entry.js$'],
   transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$'],
   // Adding this js transform made *.test.js files with imports pass in mixed js/ts projects.
-  transform: { '^.+\\.(js|jsx)$': 'ts-jest' },
+  transform: { '^.+\\.(j|t)sx?$': 'ts-jest' },
   coverageThreshold: {
     global: {
       branches: 100,
