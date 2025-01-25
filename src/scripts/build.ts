@@ -246,11 +246,7 @@ const go = () => {
     )
 
     // Run post-build step to rename CJS files only if package is type: module
-    if (
-      result.status === 0 &&
-      buildScripts.hasOwnProperty('cjs') &&
-      pkg?.type === 'module'
-    ) {
+    if (buildScripts.hasOwnProperty('cjs') && pkg?.type === 'module') {
       const cjsDir = path.join(appDirectory, 'dist', 'cjs')
       if (fs.existsSync(cjsDir)) {
         const renameFilesInDir = (dir: string) => {
@@ -273,7 +269,7 @@ const go = () => {
     }
 
     // Run post-build step for ESM files to ensure proper ESM-compatible imports.
-    if (result.status === 0 && buildScripts.hasOwnProperty('esm')) {
+    if (buildScripts.hasOwnProperty('esm')) {
       const esmDir = path.join(appDirectory, 'dist', 'esm')
       if (fs.existsSync(esmDir)) {
         const updateImportsInDir = (dir: string) => {
