@@ -72,6 +72,7 @@
     "prettier": "^3.2.5",
     "read-pkg-up": "7.0.1",
     "rimraf": "^5.0.5",
+    "ts-jest": "^29.2.5",
     "ts-loader": "^9.5.1",
     "tsconfig.js": "^3.0.0",
     "typescript": "^5.4.5",
