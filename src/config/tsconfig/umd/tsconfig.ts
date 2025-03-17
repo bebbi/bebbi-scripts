@@ -9,5 +9,5 @@ module.exports = {
     declaration: false,
     outDir: path.join(appDirectory, 'dist/umd'),
   },
-  exclude: ['**/*.test.ts', '**/*.test.js', '**/*.test.tsx', '**/*.test.jsx'],
+  exclude: ['js', 'jsx', 'ts', 'tsx'].map(ext => path.join(appDirectory, `src/**/*.test.${ext}`))
 }

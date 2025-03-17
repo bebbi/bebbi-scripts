@@ -8,4 +8,5 @@ module.exports = {
     module: 'commonjs',
     outDir: toPOSIX(path.join(appDirectory, 'dist/cjs')),
   },
+  exclude: ['js', 'jsx', 'ts', 'tsx'].map(ext => path.join(appDirectory, `src/**/*.test.${ext}`))
 }
