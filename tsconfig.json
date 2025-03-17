@@ -13,5 +13,6 @@
     "paths": {
       "*": ["*", "../tests/*"]
     }
-  }
+  },
+  "exclude": ["**/*.test.ts", "**/*.test.js", "**/*.test.tsx", "**/*.test.jsx"]
 }
