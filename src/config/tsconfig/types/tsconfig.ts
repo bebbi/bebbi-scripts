@@ -9,4 +9,5 @@ module.exports = {
     emitDeclarationOnly: true,
     outDir: toPOSIX(path.join(appDirectory, 'dist/types')),
   },
+  exclude: ['**/*.test.ts', '**/*.test.js', '**/*.test.tsx', '**/*.test.jsx'],
 }

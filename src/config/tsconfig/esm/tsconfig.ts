@@ -9,4 +9,5 @@ module.exports = {
     moduleResolution: 'node',
     outDir: toPOSIX(path.join(appDirectory, 'dist/esm')),
   },
+  exclude: ['**/*.test.ts', '**/*.test.js', '**/*.test.tsx', '**/*.test.jsx'],
 }
