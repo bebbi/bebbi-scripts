@@ -47,6 +47,7 @@
     "script": "node dist/cjs/bin.js"
   },
   "dependencies": {
+    "@swc/core": "^1.11.11",
     "@swc/jest": "^0.2.37",
     "@types/eslint": "^8.56.2",
     "@types/jest": "^29.5.11",
