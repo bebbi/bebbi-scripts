@@ -14,5 +14,5 @@
       "*": ["*", "../tests/*"]
     }
   },
-  "exclude": ["dist", "node_modules", "**/*.test.ts", "**/*.test.js", "**/*.test.tsx", "**/*.test.jsx"]
+  "exclude": ["**/*.test.ts", "**/*.test.js", "**/*.test.tsx", "**/*.test.jsx"]
 }
