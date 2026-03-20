@@ -26,7 +26,6 @@
   },
   "license": "MIT",
   "author": "Stefan Baumann <stefan.baumann@gigmade.com>",
-  "packageManager": "yarn@4.1.1",
   "devDependencies": {
     "@types/cross-spawn": "^6.0.6",
     "@types/fs-extra": "^11.0.4",
@@ -38,7 +37,7 @@
   "bin": "dist/cjs/bin.js",
   "scripts": {
     "clean": "rimraf tmpdist dist",
-    "build": "yarn clean && tsc --outDir tmpdist && node tmpdist/bin.js build cjs types --no-banner && rimraf tmpdist && yarn postBuild",
+    "build": "pnpm clean && tsc --outDir tmpdist && node tmpdist/bin.js build cjs types --no-banner && rimraf tmpdist && pnpm postBuild",
     "postBuild": "node dist/cjs/postBuild.js",
     "lint": "node dist/cjs/bin.js lint --no-banner",
     "format": "node dist/cjs/bin.js format --no-banner",
