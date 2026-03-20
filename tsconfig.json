@@ -14,5 +14,14 @@
       "*": ["*", "../tests/*"]
     }
   },
-  "exclude": ["**/*.test.ts", "**/*.test.js", "**/*.test.tsx", "**/*.test.jsx"]
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.js",
+    "**/*.test.tsx",
+    "**/*.test.jsx",
+    "**/*.stories.ts",
+    "**/*.stories.js",
+    "**/*.stories.tsx",
+    "**/*.stories.jsx"
+  ]
 }
