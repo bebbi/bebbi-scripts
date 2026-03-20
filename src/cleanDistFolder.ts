@@ -1,5 +1,6 @@
 import { rimrafSync } from 'rimraf'
 import { appDirectory, log } from '.'
+
 import path = require('path')
 
 // Clean the dist folder based on provided arguments

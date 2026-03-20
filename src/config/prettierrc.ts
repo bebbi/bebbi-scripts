@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Options } from 'prettier'
+import type { Options } from 'prettier'
 
 const config: Options = {
   arrowParens: 'avoid',

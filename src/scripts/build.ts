@@ -1,20 +1,20 @@
+import spawn from 'cross-spawn'
 import crypto from 'crypto'
 import fs from 'fs'
 import path from 'path'
-import spawn from 'cross-spawn'
 import yargsParser from 'yargs-parser'
+import { cleanDistFolder } from '../cleanDistFolder'
 import {
   appDirectory,
   getConcurrentlyArgs,
   hasPkgProp,
-  OneOrMany,
+  log,
+  type OneOrMany,
   pkg,
   resolveBin,
-  log,
   toPOSIX,
   toRelative,
 } from '../utils'
-import { cleanDistFolder } from '../cleanDistFolder'
 
 console.log('Running `bebbi-scripts build`, Please wait...')
 
@@ -56,7 +56,7 @@ const getPackageBuildProps = (): Partial<
 > => {
   /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
   const build =
-    typeof pkg?.['build'] === 'string' ? [pkg['build']] : pkg?.['build'] ?? []
+    typeof pkg?.['build'] === 'string' ? [pkg['build']] : (pkg?.['build'] ?? [])
   if (Array.isArray(build)) {
     const res = Object.fromEntries(
       buildTypes.map((b) => {

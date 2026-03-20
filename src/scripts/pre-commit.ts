@@ -1,6 +1,6 @@
-import path from 'path'
 import spawn from 'cross-spawn'
-import { hasPkgProp, hasFile, resolveBin, toRelative } from '../utils'
+import path from 'path'
+import { hasFile, hasPkgProp, resolveBin, toRelative } from '../utils'
 
 console.log('Running `bebbi-scripts pre-commit`, Please wait...')
 

@@ -1,7 +1,7 @@
-import path from 'path'
 import spawn from 'cross-spawn'
+import path from 'path'
 import yargsParser from 'yargs-parser'
-import { hasPkgProp, resolveBin, hasFile, fromRoot, toRelative } from '../utils'
+import { fromRoot, hasFile, hasPkgProp, resolveBin, toRelative } from '../utils'
 
 console.log('Running `bebbi-scripts lint`, Please wait...')
 

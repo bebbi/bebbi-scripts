@@ -1,7 +1,7 @@
 import isCI from 'is-ci'
 import { run } from 'jest'
-import { hasFile, hasPkgProp, parseEnv } from '../utils'
 import { jestConfig } from '../config/jest.config'
+import { hasFile, hasPkgProp, parseEnv } from '../utils'
 
 console.log('Running `bebbi-scripts test`, Please wait...')
 

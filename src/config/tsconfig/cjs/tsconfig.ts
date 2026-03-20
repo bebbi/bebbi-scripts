@@ -1,5 +1,5 @@
-import { appDirectory, toPOSIX } from '../../../utils'
 import path from 'path'
+import { appDirectory, toPOSIX } from '../../../utils'
 
 module.exports = {
   include: [toPOSIX(path.join(appDirectory, 'src/**/*'))],

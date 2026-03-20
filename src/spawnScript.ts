@@ -1,13 +1,13 @@
-import path from 'path'
 import { sync } from 'cross-spawn'
+import path from 'path'
+import { signOff } from './bebbiArt'
 import {
   attemptResolve,
-  getEnv,
-  handleSignal,
   availableScriptNames,
+  getEnv,
   getScriptsDir,
+  handleSignal,
 } from './utils'
-import { signOff } from './bebbiArt'
 
 export const spawnScript = (
   executor: string,

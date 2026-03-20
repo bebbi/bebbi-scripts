@@ -1,5 +1,5 @@
 import spawn from 'cross-spawn'
-import { parseEnv, resolveBin, ifScript, getConcurrentlyArgs } from '../utils'
+import { getConcurrentlyArgs, ifScript, parseEnv, resolveBin } from '../utils'
 
 console.log('Running `bebbi-scripts validate`, Please wait...')
 

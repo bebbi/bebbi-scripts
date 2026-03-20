@@ -1,7 +1,7 @@
-import { SpawnSyncReturns } from 'child_process'
-import fs from 'fs'
+import type { SpawnSyncReturns } from 'child_process'
 import spawn from 'cross-spawn'
-import { fromRoot, isBebbiScripts, pkg, resolveBin, log } from '..'
+import fs from 'fs'
+import { fromRoot, isBebbiScripts, log, type pkg, resolveBin } from '..'
 
 const BEBBI_EXTENDS = 'bebbi-scripts/tsconfig.json'
 

@@ -1,4 +1,4 @@
-export * from './utils'
+export * from './copyConfigs'
 export * from './help'
 export * from './spawnScript'
-export * from './copyConfigs'
+export * from './utils'

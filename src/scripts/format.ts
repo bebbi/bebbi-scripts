@@ -1,5 +1,5 @@
-import path from 'path'
 import spawn from 'cross-spawn'
+import path from 'path'
 import yargsParser from 'yargs-parser'
 import { hasFile, hasLocalConfig, resolveBin, toRelative } from '../utils'
 

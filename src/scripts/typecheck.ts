@@ -1,6 +1,6 @@
 import spawn from 'cross-spawn'
 import yargsParser from 'yargs-parser'
-import { /* hasAnyDep, */ resolveBin, hasFile, log } from '..'
+import { /* hasAnyDep, */ hasFile, log, resolveBin } from '..'
 
 console.log('Running `bebbi-scripts typecheck`, Please wait...')
 

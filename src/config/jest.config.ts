@@ -1,4 +1,4 @@
-import jest from 'jest'
+import type jest from 'jest'
 import { hasFile, ifAnyDep } from '../utils'
 
 const ignores = [

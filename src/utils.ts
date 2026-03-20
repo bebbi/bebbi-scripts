@@ -1,9 +1,9 @@
+import { cosmiconfigSync } from 'cosmiconfig'
+import type spawn from 'cross-spawn'
 import fs from 'fs'
-import path from 'path'
-import spawn from 'cross-spawn'
 import { globSync } from 'glob'
 import has from 'lodash.has'
-import { cosmiconfigSync } from 'cosmiconfig'
+import path from 'path'
 /**
  * NOTE:
  *
@@ -19,6 +19,7 @@ import { cosmiconfigSync } from 'cosmiconfig'
 import readPkgUp from 'read-pkg-up'
 import { bebbiArt, signOff } from './bebbiArt'
 import { resolveBin } from './resolveBin'
+
 export { resolveBin } from './resolveBin'
 
 export const toRelative = (p: string) => p.replace(process.cwd(), '.')
@@ -26,7 +27,10 @@ export const toRelative = (p: string) => p.replace(process.cwd(), '.')
 const arrify = <T>(props: OneOrMany<T>): T[] =>
   Array.isArray(props) ? props : [props]
 
-export const { packageJson: pkg, path: pkgPath = '' }: { packageJson?: any; path?: string } =
+export const {
+  packageJson: pkg,
+  path: pkgPath = '',
+}: { packageJson?: any; path?: string } =
   readPkgUp.sync({
     cwd: fs.realpathSync(process.cwd()),
   }) ?? {}
@@ -180,9 +184,12 @@ export const getConcurrentlyArgs = (
   // prettier-ignore
   return [
     killOthers ? '--kill-others-on-fail' : '',
-    '--prefix', '[{name}]',
-    '--names', Object.keys(scriptsCpy).join(','),
-    '--prefix-colors', prefixColors,
+    '--prefix',
+    '[{name}]',
+    '--names',
+    Object.keys(scriptsCpy).join(','),
+    '--prefix-colors',
+    prefixColors,
     ...Object.values(scriptsCpy).map((s) => JSON.stringify(s)),
   ].filter(Boolean)
 }
