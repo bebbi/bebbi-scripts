@@ -26,7 +26,7 @@ export const toRelative = (p: string) => p.replace(process.cwd(), '.')
 const arrify = <T>(props: OneOrMany<T>): T[] =>
   Array.isArray(props) ? props : [props]
 
-export const { packageJson: pkg, path: pkgPath = '' } =
+export const { packageJson: pkg, path: pkgPath = '' }: { packageJson?: any; path?: string } =
   readPkgUp.sync({
     cwd: fs.realpathSync(process.cwd()),
   }) ?? {}
